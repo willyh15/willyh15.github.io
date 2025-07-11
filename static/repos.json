@@ -1,0 +1,37 @@
+[
+  {
+    "name": "ghosttrigger",
+    "html_url": "https://github.com/willyh15/ghosttrigger",
+    "description": "Trigger the R-SIM menu, spoof MGCopyAnswer, and automate baseband commands",
+    "language": "Objective-C",
+    "topics": ["jailbreak", "spoof", "sim", "baseband", "telephony"]
+  },
+  {
+    "name": "job-rotator-cli",
+    "html_url": "https://github.com/willyh15/job-rotator-cli",
+    "description": "CLI to rotate tech job listings using filters and GitHub Actions",
+    "language": "Python",
+    "topics": ["ci", "automation", "jobs", "cli", "fullstack"]
+  },
+  {
+    "name": "viral",
+    "html_url": "https://github.com/willyh15/viral",
+    "description": "LLM-powered TikTok growth engine using SvelteKit + Supabase",
+    "language": "TypeScript",
+    "topics": ["svelte", "supabase", "openrouter", "fullstack", "ai"]
+  },
+  {
+    "name": "devops-for-hackers",
+    "html_url": "https://github.com/willyh15/devops-for-hackers",
+    "description": "Infrastructure recipes for solo hackers using Docker, GitHub Actions, and Terraform",
+    "language": "Shell",
+    "topics": ["docker", "github-actions", "terraform", "devops", "infra"]
+  },
+  {
+    "name": "aircrack-ios",
+    "html_url": "https://github.com/willyh15/aircrack-ios",
+    "description": "Port of aircrack-ng utilities for jailbroken iPhones running Dopamine",
+    "language": "C",
+    "topics": ["aircrack", "pentest", "security", "ios", "jailbreak"]
+  }
+]
