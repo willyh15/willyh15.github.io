@@ -2,21 +2,28 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>willyh15 | DevOps · Full Stack · Cybersecurity</title>
-    <script type="module" src="repos.js"></script>
-    <link rel="stylesheet" href="style.css" />
+    <title>willyh15 | DevOps • Full Stack • Cybersecurity</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="css/style.css" />
+    <script type="module" src="components/repo-card.js"></script>
+    <script type="module" src="js/main.js"></script>
   </head>
   <body>
     <header>
-      <h1>willyh15 · Portfolio</h1>
+      <h1>willyh15 • GitHub Portfolio</h1>
+      <p>DevOps • Full Stack • Cybersecurity</p>
       <nav>
         <button data-filter="All">All</button>
         <button data-filter="DevOps">DevOps</button>
-        <button data-filter="FullStack">FullStack</button>
+        <button data-filter="FullStack">Full Stack</button>
         <button data-filter="Cybersecurity">Cybersecurity</button>
       </nav>
     </header>
 
-    <main id="repo-list">Loading...</main>
+    <main id="repo-list"></main>
+
+    <footer>
+      <p>🚀 Built with native Web Components + GitHub Pages</p>
+    </footer>
   </body>
 </html>
