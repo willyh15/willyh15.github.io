@@ -32,6 +32,11 @@ h2 {
   }
 }
 
+.typewriter-wrapper {
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
