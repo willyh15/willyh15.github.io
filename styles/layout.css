@@ -15,20 +15,21 @@ h2 {
   font-size: 1.8rem;
   font-weight: 500;
   color: var(--accent);
-  white-space: nowrap;
+  white-space: normal;
+  word-break: break-word;
   overflow: hidden;
   border-right: 2px solid var(--accent);
   display: inline-block;
   max-width: 100%;
-  animation: typing 4s steps(40, end) forwards, blink 0.75s step-end infinite;
+  animation: typing 4s steps(70, end) forwards, blink 0.75s step-end infinite;
 }
 
 @keyframes typing {
   from {
-    width: 0;
+    max-width: 0ch;
   }
   to {
-    width: 100%;
+    max-width: 70ch;
   }
 }
 
