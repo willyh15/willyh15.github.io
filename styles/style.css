@@ -181,7 +181,12 @@ main {
 section {
   opacity: 0;
   transform: translateY(40px);
-  animation: fadeInUp 0.8s ease forwards;
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+
+section.visible {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 section:nth-of-type(2) { animation-delay: 0.1s; }
