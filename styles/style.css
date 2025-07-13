@@ -51,6 +51,17 @@ h2 {
   margin: 2rem 0;
 }
 
+#scroll-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 4px;
+  width: 0%;
+  background: var(--accent);
+  z-index: 999;
+  transition: width 0.2s ease-out;
+}
+
 .gh-badge {
   margin-top: 0.5rem;
   animation: badgePop 1s ease forwards;
