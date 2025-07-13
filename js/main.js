@@ -8,6 +8,13 @@ const TAG_MAP = {
 
 const list = document.querySelector('#repo-list');
 
+window.addEventListener("scroll", () => {
+  const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
+  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrolled = (winScroll / height) * 100;
+  document.getElementById("scroll-bar").style.width = scrolled + "%";
+});
+
 async function loadRepos() {
   const res = await fetch('static/repos.json');
   const repos = await res.json();
