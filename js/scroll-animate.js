@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
       entries.forEach((entry) => {
         if (entry.isIntersecting) {
           entry.target.classList.add("visible");
-          observer.unobserve(entry.target); // fade-in only once
+          observer.unobserve(entry.target); // only animate once
         }
       });
     },
@@ -18,20 +18,4 @@ document.addEventListener("DOMContentLoaded", () => {
   document.querySelectorAll("section").forEach((section) => {
     observer.observe(section);
   });
-});
-
-const sections = document.querySelectorAll('section');
-
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('visible');
-    }
-  });
-}, {
-  threshold: 0.1
-});
-
-sections.forEach(sec => {
-  observer.observe(sec);
 });
