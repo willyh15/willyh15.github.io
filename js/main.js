@@ -1,49 +1,40 @@
-import '../components/repo-card.js';
+// js/main.js
 
-const TAG_MAP = {
-  DevOps: ['docker', 'kubernetes', 'ci', 'cd', 'devops', 'infra', 'terraform', 'ansible'],
-  FullStack: ['svelte', 'nextjs', 'frontend', 'backend', 'sqlite', 'supabase', 'fullstack'],
-  Cybersecurity: ['pentest', 'security', 'aircrack', 'ctf', 'spoof', 'jailbreak']
-};
+document.addEventListener("DOMContentLoaded", () => {
+  const repoList = document.getElementById("repo-list");
+  const buttons = document.querySelectorAll("nav button");
 
-const list = document.querySelector('#repo-list');
+  async function fetchRepos() {
+    const res = await fetch("https://api.github.com/users/willyh15/repos?per_page=100&sort=updated");
+    const repos = await res.json();
 
-window.addEventListener("scroll", () => {
-  const winScroll = document.documentElement.scrollTop || document.body.scrollTop;
-  const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-  const scrolled = (winScroll / height) * 100;
-  document.getElementById("scroll-bar").style.width = scrolled + "%";
-});
+    repos.forEach(repo => {
+      const card = document.createElement("repo-card");
+      card.repo = repo;
+      card.dataset.tags = repo.topics ? repo.topics.join(',') : '';
+      repoList.appendChild(card);
+    });
+  }
 
-async function loadRepos() {
-  const res = await fetch('static/repos.json');
-  const repos = await res.json();
-  render(repos);
-  setupFilters(repos);
-}
+  function filterRepos(tag) {
+    const allCards = repoList.querySelectorAll("repo-card");
+    allCards.forEach(card => {
+      if (tag === "All" || card.dataset.tags.includes(tag)) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
 
-function render(repos) {
-  list.innerHTML = '';
-  repos.forEach(repo => {
-    const card = document.createElement('repo-card');
-    card.repo = repo;
-    list.appendChild(card);
-  });
-}
-
-function setupFilters(repos) {
-  document.querySelectorAll('nav button').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const tag = btn.dataset.filter;
-      if (tag === 'All') return render(repos);
-
-      const keywords = TAG_MAP[tag] || [];
-      const filtered = repos.filter(r =>
-        (r.topics || []).some(t => keywords.includes(t.toLowerCase()))
-      );
-      render(filtered);
+  buttons.forEach(button => {
+    button.addEventListener("click", () => {
+      buttons.forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      const tag = button.getAttribute("data-filter");
+      filterRepos(tag);
     });
   });
-}
 
-loadRepos();
+  fetchRepos();
+});
