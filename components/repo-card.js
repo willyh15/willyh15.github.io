@@ -1,5 +1,3 @@
-// components/repo-card.js
-
 export class RepoCard extends HTMLElement {
   constructor() {
     super();
@@ -22,10 +20,12 @@ export class RepoCard extends HTMLElement {
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
           padding: 1.25rem;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transform-style: preserve-3d;
+          perspective: 1000px;
         }
         :host(:hover) {
-          transform: translateY(-4px);
-          box-shadow: 0 6px 40px rgba(88, 166, 255, 0.25);
+          transform: rotateX(6deg) rotateY(-6deg) scale(1.03);
+          box-shadow: 0 10px 40px rgba(88, 166, 255, 0.35);
         }
         h3 {
           margin: 0 0 0.5rem;
