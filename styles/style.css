@@ -70,6 +70,22 @@ header.intro {
   }
 }
 
+.hero-3d {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.hero-3d img {
+  width: 100%;
+  max-width: 500px;
+  transform: perspective(800px) rotateX(5deg);
+  transition: transform 0.3s ease;
+}
+
+.hero-3d img:hover {
+  transform: perspective(800px) rotateX(0deg) scale(1.03);
+}
+
 h1 {
   font-size: 2rem;
   color: var(--accent);
