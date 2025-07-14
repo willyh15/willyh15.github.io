@@ -36,6 +36,40 @@ header.intro {
   padding: 1.5rem 0;
 }
 
+.floating-3d-shapes {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cube {
+  width: 40px;
+  height: 40px;
+  background: var(--accent);
+  transform: rotate3d(1, 1, 0, 45deg);
+  animation: float-cube 5s ease-in-out infinite alternate;
+}
+
+.cube.small {
+  width: 20px;
+  height: 20px;
+  background: #58a6ff99;
+  margin-top: 1rem;
+  margin-left: 2rem;
+  animation-duration: 7s;
+}
+
+@keyframes float-cube {
+  0% {
+    transform: translateY(0) rotate3d(1, 1, 0, 45deg);
+  }
+  100% {
+    transform: translateY(-20px) rotate3d(1, 1, 0, 75deg);
+  }
+}
+
 h1 {
   font-size: 2rem;
   color: var(--accent);
