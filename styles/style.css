@@ -70,20 +70,34 @@ header.intro {
   }
 }
 
-.hero-3d {
-  text-align: center;
-  margin: 2rem 0;
+.hero-3d-cube {
+  width: 60px;
+  height: 60px;
+  position: relative;
+  margin: 2rem auto;
+  transform-style: preserve-3d;
+  animation: rotateCube 6s infinite linear;
 }
 
-.hero-3d img {
-  width: 100%;
-  max-width: 500px;
-  transform: perspective(800px) rotateX(5deg);
-  transition: transform 0.3s ease;
+.hero-3d-cube .face {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  background: var(--accent);
+  opacity: 0.6;
+  border: 2px solid rgba(255, 255, 255, 0.1);
 }
 
-.hero-3d img:hover {
-  transform: perspective(800px) rotateX(0deg) scale(1.03);
+.hero-3d-cube .top    { transform: rotateX(90deg) translateZ(30px); }
+.hero-3d-cube .bottom { transform: rotateX(-90deg) translateZ(30px); }
+.hero-3d-cube .left   { transform: rotateY(-90deg) translateZ(30px); }
+.hero-3d-cube .right  { transform: rotateY(90deg) translateZ(30px); }
+.hero-3d-cube .front  { transform: translateZ(30px); }
+.hero-3d-cube .back   { transform: rotateY(180deg) translateZ(30px); }
+
+@keyframes rotateCube {
+  0%   { transform: rotateX(0deg) rotateY(0deg); }
+  100% { transform: rotateX(360deg) rotateY(360deg); }
 }
 
 h1 {
