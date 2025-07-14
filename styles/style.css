@@ -132,6 +132,13 @@ nav button:hover {
   box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
 }
 
+nav button.active {
+  background: var(--accent);
+  color: var(--bg);
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.2);
+}
+
 main {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
