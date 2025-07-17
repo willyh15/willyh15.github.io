@@ -8,31 +8,18 @@
   <meta name="theme-color" content="#0d1117" />
   <link rel="icon" href="static/favicon.ico" />
   <link rel="stylesheet" href="styles/style.css" />
-  <style>
-    canvas.three-scene {
-      position: fixed;
-      top: 0;
-      left: 0;
-      z-index: -1;
-      width: 100vw;
-      height: 100vh;
-    }
-  </style>
-  <script type="module" src="js/three-scene.js"></script>
   <script type="module" src="components/repo-card.js"></script>
   <script type="module" src="js/main.js"></script>
   <script type="module" src="js/typing-header.js"></script>
   <script type="module" src="js/scroll-animate.js"></script>
   <script type="module" src="js/scroll-bar.js"></script>
+  <script type="module" src="js/space-scene.js"></script> <!-- NEW Three.js scene -->
 </head>
 <body>
   <div id="scroll-bar"></div>
+  <canvas id="space-scene"></canvas>
+
   <header class="intro">
-    <canvas class="three-scene"></canvas>
-    <div class="floating-3d-shapes">
-      <div class="cube"></div>
-      <div class="cube small"></div>
-    </div>
     <div class="typewriter-wrapper">
       <h1 id="typewriter" data-text="Hi, I’m Will Harrison — DevOps • Full Stack • Cybersecurity"></h1>
     </div>
