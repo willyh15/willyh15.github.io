@@ -1,40 +1,36 @@
-// js/main.js
+import "/components/repo-card.js";
 
-document.addEventListener("DOMContentLoaded", () => {
-  const repoList = document.getElementById("repo-list");
-  const buttons = document.querySelectorAll("nav button");
+const filters = document.querySelectorAll("nav button");
+const repoList = document.getElementById("repo-list");
 
-  async function fetchRepos() {
-    const res = await fetch("https://api.github.com/users/willyh15/repos?per_page=100&sort=updated");
-    const repos = await res.json();
+let allRepos = [];
 
-    repos.forEach(repo => {
-      const card = document.createElement("repo-card");
-      card.repo = repo;
-      card.dataset.tags = repo.topics ? repo.topics.join(',') : '';
-      repoList.appendChild(card);
-    });
-  }
-
-  function filterRepos(tag) {
-    const allCards = repoList.querySelectorAll("repo-card");
-    allCards.forEach(card => {
-      if (tag === "All" || card.dataset.tags.includes(tag)) {
-        card.style.display = "block";
-      } else {
-        card.style.display = "none";
-      }
-    });
-  }
-
-  buttons.forEach(button => {
-    button.addEventListener("click", () => {
-      buttons.forEach(btn => btn.classList.remove("active"));
-      button.classList.add("active");
-      const tag = button.getAttribute("data-filter");
-      filterRepos(tag);
-    });
+fetch("static/repos.json")
+  .then((res) => res.json())
+  .then((repos) => {
+    allRepos = repos;
+    renderRepos("All");
   });
 
-  fetchRepos();
+filters.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    filters.forEach((b) => b.classList.remove("active"));
+    btn.classList.add("active");
+    renderRepos(btn.dataset.filter);
+  });
 });
+
+function renderRepos(filter) {
+  repoList.innerHTML = "";
+
+  const filtered = allRepos.filter((repo) => {
+    if (filter === "All") return true;
+    return repo.topics && repo.topics.includes(filter.toLowerCase());
+  });
+
+  filtered.forEach((repo) => {
+    const card = document.createElement("repo-card");
+    card.data = repo;
+    repoList.appendChild(card);
+  });
+}
