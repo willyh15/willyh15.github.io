@@ -1,7 +1,3 @@
-html {
-  scroll-behavior: smooth;
-}
-
 :root {
   --bg: #0d1117;
   --fg: #c9d1d9;
@@ -11,58 +7,33 @@ html {
   --font: 'Segoe UI', sans-serif;
 }
 
-body {
+* {
   margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
   font-family: var(--font);
   background: var(--bg);
   color: var(--fg);
   line-height: 1.5;
   padding: 1rem;
+  overflow-x: hidden;
+  position: relative;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-header.intro {
-  position: sticky;
+canvas#space-scene {
+  position: fixed;
   top: 0;
-  z-index: 200;
-  background: rgba(13, 17, 23, 0.7);
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid var(--border);
-  padding: 1.5rem 0;
-}
-
-.floating-3d-shapes {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.cube {
-  width: 40px;
-  height: 40px;
-  background: var(--accent);
-  transform: rotate3d(1, 1, 0, 45deg);
-  animation: float-cube 5s ease-in-out infinite alternate;
-}
-
-.cube.small {
-  width: 20px;
-  height: 20px;
-  background: #58a6ff99;
-  margin-top: 1rem;
-  margin-left: 2rem;
-  animation-duration: 7s;
-}
-
-@keyframes float-cube {
-  0%   { transform: translateY(0) rotate3d(1, 1, 0, 45deg); }
-  100% { transform: translateY(-20px) rotate3d(1, 1, 0, 75deg); }
+  left: 0;
+  z-index: -1;
+  width: 100vw;
+  height: 100vh;
 }
 
 #scroll-bar {
@@ -76,6 +47,15 @@ header.intro {
   transition: width 0.2s ease-out;
 }
 
+header.intro {
+  text-align: center;
+  padding: 2rem 1rem;
+  margin-bottom: 2rem;
+  background: rgba(13, 17, 23, 0.75);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border);
+}
+
 .typewriter-wrapper {
   overflow-x: auto;
   white-space: nowrap;
@@ -86,30 +66,19 @@ header.intro {
   font-weight: 500;
   color: var(--accent);
   border-right: 2px solid var(--accent);
-  overflow: hidden;
   display: inline-block;
+  max-width: 100%;
   animation: typing 4s steps(70, end) forwards, blink 0.75s step-end infinite;
 }
 
 @keyframes typing {
   from { max-width: 0ch; }
-  to   { max-width: 70ch; }
+  to { max-width: 70ch; }
 }
 
 @keyframes blink {
   0%, 100% { border-color: transparent; }
-  50%      { border-color: var(--accent); }
-}
-
-h1, h2 {
-  color: var(--accent);
-  margin: 0 0 0.5rem;
-}
-
-h2 {
-  font-size: 1.6rem;
-  border-bottom: 1px dashed var(--border);
-  padding-bottom: 0.25rem;
+  50% { border-color: var(--accent); }
 }
 
 .gh-badge {
@@ -119,17 +88,23 @@ h2 {
 
 @keyframes badgePop {
   from { opacity: 0; transform: scale(0.9); }
-  to   { opacity: 1; transform: scale(1); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+h2 {
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+  font-size: 1.6rem;
+  border-bottom: 1px dashed var(--border);
+  padding-bottom: 0.25rem;
 }
 
 nav {
-  position: sticky;
-  top: 0;
-  background: var(--bg);
-  z-index: 100;
-  padding: 1rem;
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(6px);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
 }
 
 nav button {
@@ -154,15 +129,29 @@ nav button.active {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 1.5rem;
-  margin-top: 1rem;
+}
+
+.repo-card {
+  background: rgba(22, 27, 34, 0.6);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
+  padding: 1.25rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.repo-card:hover {
+  transform: rotateX(6deg) rotateY(-6deg) scale(1.03);
+  box-shadow: 0 10px 40px rgba(88, 166, 255, 0.35);
 }
 
 .skills-grid {
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  justify-content: center;
   margin-top: 1rem;
+  justify-content: center;
 }
 
 .skills-grid span {
@@ -213,14 +202,4 @@ footer {
   padding: 1rem;
   border-top: 1px solid var(--border);
   border-radius: 12px 12px 0 0;
-}
-
-#contacts ul {
-  list-style: none;
-  padding: 0;
-  text-align: center;
-}
-
-#contacts li {
-  margin: 0.3rem 0;
 }
