@@ -13,9 +13,61 @@
     <script type="module" src="js/typing-header.js"></script>
     <script type="module" src="js/scroll-animate.js"></script>
     <script type="module" src="js/scroll-bar.js"></script>
+    <script type="module" src="js/space-scene.js"></script>
+    <style>
+      body {
+        margin: 0;
+        overflow-x: hidden;
+        background-color: #000;
+        color: #fff;
+        font-family: 'Segoe UI', sans-serif;
+      }
+
+      canvas#space-scene {
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: -1;
+        width: 100vw;
+        height: 100vh;
+      }
+
+      main, section, header, footer {
+        position: relative;
+        z-index: 1;
+        background: rgba(0, 0, 0, 0.6);
+        backdrop-filter: blur(6px);
+        padding: 2rem;
+        border-radius: 10px;
+        margin: 2rem auto;
+        max-width: 960px;
+      }
+
+      h1, h2, p, span, a, li {
+        color: #fff;
+      }
+
+      .resume-button {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.6rem 1.2rem;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        text-decoration: none;
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+        transition: all 0.2s ease-in-out;
+      }
+
+      .resume-button:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    </style>
   </head>
   <body>
+    <canvas id="space-scene"></canvas>
     <div id="scroll-bar"></div>
+
     <header class="intro">
       <div class="floating-3d-shapes">
         <div class="cube"></div>
@@ -70,7 +122,7 @@
     </section>
 
     <footer>
-      <p>🚀 Built with native Web Components + GitHub Pages</p>
+      <p>🚀 Built with native Web Components + GitHub Pages + Three.js</p>
     </footer>
   </body>
 </html>
