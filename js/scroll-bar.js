@@ -1,14 +1,16 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const scrollBar = document.getElementById('scroll-bar');
+document.addEventListener("DOMContentLoaded", () => {
+  const el = document.getElementById("typewriter");
+  const text = el.getAttribute("data-text");
+  let index = 0;
 
-  const updateScrollBar = () => {
-    const scrollTop = window.scrollY || document.documentElement.scrollTop;
-    const docHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-    const scrolled = (scrollTop / docHeight) * 100;
-    scrollBar.style.width = `${scrolled}%`;
+  const type = () => {
+    if (index < text.length) {
+      el.textContent += text.charAt(index);
+      index++;
+      setTimeout(type, 50); // typing speed
+    }
   };
 
-  window.addEventListener('scroll', updateScrollBar);
-  window.addEventListener('resize', updateScrollBar);
-  updateScrollBar(); // Initial run
+  el.textContent = ""; // Clear initial content
+  type();
 });
