@@ -1,16 +1,8 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const el = document.getElementById("typewriter");
-  const text = el.getAttribute("data-text");
-  let index = 0;
+const scrollBar = document.getElementById("scroll-bar");
 
-  const type = () => {
-    if (index < text.length) {
-      el.textContent += text.charAt(index);
-      index++;
-      setTimeout(type, 50); // typing speed
-    }
-  };
-
-  el.textContent = ""; // Clear initial content
-  type();
+window.addEventListener("scroll", () => {
+  const scrollTop = window.scrollY;
+  const docHeight = document.body.scrollHeight - window.innerHeight;
+  const scrollPercent = (scrollTop / docHeight) * 100;
+  scrollBar.style.width = `${scrollPercent}%`;
 });
