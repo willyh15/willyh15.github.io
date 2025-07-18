@@ -1,17 +1,23 @@
 class RepoCard extends HTMLElement {
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });
+    this.attachShadow({ mode: 'open' });
   }
 
-  set data(repo) {
+  set repo(data) {
+    const {
+      name,
+      html_url,
+      description = "No description provided.",
+      language = "Unknown",
+      stargazers_count = 0,
+      forks_count = 0,
+    } = data;
+
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: block;
-        }
-
-        .card {
           background: rgba(22, 27, 34, 0.6);
           backdrop-filter: blur(8px);
           border-radius: 12px;
@@ -19,9 +25,11 @@ class RepoCard extends HTMLElement {
           box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
           padding: 1.25rem;
           transition: transform 0.3s ease, box-shadow 0.3s ease;
+          transform-style: preserve-3d;
+          perspective: 1000px;
         }
 
-        .card:hover {
+        :host(:hover) {
           transform: rotateX(6deg) rotateY(-6deg) scale(1.03);
           box-shadow: 0 10px 40px rgba(88, 166, 255, 0.35);
         }
@@ -29,6 +37,7 @@ class RepoCard extends HTMLElement {
         h3 {
           margin: 0 0 0.5rem;
           color: #58a6ff;
+          font-size: 1.2rem;
         }
 
         p {
@@ -37,31 +46,23 @@ class RepoCard extends HTMLElement {
           margin-bottom: 0.8rem;
         }
 
+        .meta {
+          font-size: 0.8rem;
+          color: #c9d1d9;
+        }
+
         a {
           color: #58a6ff;
           text-decoration: none;
-          font-size: 0.9rem;
-        }
-
-        .meta {
-          display: flex;
-          justify-content: space-between;
-          font-size: 0.85rem;
-          color: #6e7681;
-          margin-top: 0.5rem;
         }
       </style>
-      <div class="card">
-        <h3><a href="${repo.html_url}" target="_blank">${repo.name}</a></h3>
-        <p>${repo.description || "No description provided."}</p>
-        <div class="meta">
-          <span>⭐ ${repo.stargazers_count}</span>
-          <span>🍴 ${repo.forks_count}</span>
-          <span>💬 ${repo.language || "Unknown"}</span>
-        </div>
+      <div>
+        <h3><a href="${html_url}" target="_blank">${name}</a></h3>
+        <p>${description}</p>
+        <div class="meta">⭐ ${stargazers_count} | 🍴 ${forks_count} | 💻 ${language}</div>
       </div>
     `;
   }
 }
 
-customElements.define("repo-card", RepoCard);
+customElements.define('repo-card', RepoCard);
