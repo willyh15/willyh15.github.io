@@ -1,36 +1,43 @@
-import "/components/repo-card.js";
+import '../components/repo-card.js';
 
-const filters = document.querySelectorAll("nav button");
-const repoList = document.getElementById("repo-list");
+document.addEventListener('DOMContentLoaded', () => {
+  fetch('static/repos.json')
+    .then(response => response.json())
+    .then(repos => {
+      const repoList = document.getElementById('repo-list');
 
-let allRepos = [];
+      repos.forEach(repo => {
+        const card = document.createElement('repo-card');
+        card.repo = repo;
+        card.setAttribute('data-tags', repo.topics?.join(',') || '');
+        repoList.appendChild(card);
+      });
 
-fetch("static/repos.json")
-  .then((res) => res.json())
-  .then((repos) => {
-    allRepos = repos;
-    renderRepos("All");
-  });
-
-filters.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    filters.forEach((b) => b.classList.remove("active"));
-    btn.classList.add("active");
-    renderRepos(btn.dataset.filter);
-  });
+      setupFilters();
+    })
+    .catch(error => {
+      console.error('Error loading repos.json:', error);
+    });
 });
 
-function renderRepos(filter) {
-  repoList.innerHTML = "";
+function setupFilters() {
+  const buttons = document.querySelectorAll('nav button');
+  const cards = document.querySelectorAll('repo-card');
 
-  const filtered = allRepos.filter((repo) => {
-    if (filter === "All") return true;
-    return repo.topics && repo.topics.includes(filter.toLowerCase());
-  });
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      buttons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      const filter = button.dataset.filter;
 
-  filtered.forEach((repo) => {
-    const card = document.createElement("repo-card");
-    card.data = repo;
-    repoList.appendChild(card);
+      cards.forEach(card => {
+        const tags = card.getAttribute('data-tags');
+        if (filter === 'All' || tags.includes(filter)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
   });
 }
