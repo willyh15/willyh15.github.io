@@ -1,8 +1,7 @@
-const scrollBar = document.getElementById("scroll-bar");
-
-window.addEventListener("scroll", () => {
-  const scrollTop = window.scrollY;
-  const docHeight = document.body.scrollHeight - window.innerHeight;
-  const scrollPercent = (scrollTop / docHeight) * 100;
-  scrollBar.style.width = `${scrollPercent}%`;
+document.addEventListener("scroll", () => {
+  const scrollBar = document.getElementById("scroll-bar");
+  const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+  const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+  const scrollPercent = (scrollTop / scrollHeight) * 100;
+  scrollBar.style.width = scrollPercent + "%";
 });
