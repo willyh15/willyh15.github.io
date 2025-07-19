@@ -1,175 +1,99 @@
-/* Reset and Base */
+/* === Reset === */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
-
 html, body {
-  height: 100%;
   width: 100%;
-  background-color: #000010;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  color: #e0e6f0;
-  overflow-x: hidden;
+  height: 100%;
+  font-family: 'Segoe UI', sans-serif;
+  background: black;
+  overflow: hidden;
+  color: #eee;
 }
 
-h1, h2 {
-  font-weight: 600;
-  text-align: center;
-  color: #ffffff;
-  text-shadow: 0 0 10px #00f0ff;
-}
-
-/* Scrollbar */
-#scroll-bar {
+/* === Canvas Background === */
+canvas#space-scene {
   position: fixed;
   top: 0;
   left: 0;
-  height: 4px;
-  width: 0%;
-  background: #00ffff;
-  z-index: 9999;
-}
-
-/* Typewriter */
-.typewriter-wrapper {
-  position: absolute;
-  bottom: 2rem;
   width: 100%;
-  text-align: center;
-  z-index: 5;
-}
-#typewriter {
-  font-size: 1.6rem;
-  letter-spacing: 1px;
-  color: #ffffff;
-  text-shadow: 0 0 8px #0ff;
-}
-
-/* GitHub Badge */
-.gh-badge {
-  position: absolute;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 10;
-}
-
-/* 3D Canvas */
-#space-scene {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
+  height: 100%;
   display: block;
   z-index: 0;
+  background-color: #000;
 }
 
-/* Header */
-header.intro {
-  position: relative;
-  height: 100vh;
-  width: 100%;
-  overflow: hidden;
+/* === UI Card Panels === */
+.ui-card {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(1);
+  background: rgba(20, 20, 30, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+  padding: 2rem;
+  z-index: 2;
+  width: 90%;
+  max-width: 600px;
+  max-height: 80%;
+  overflow-y: auto;
+  backdrop-filter: blur(15px);
+  transition: opacity 0.4s ease, transform 0.3s ease;
 }
 
-/* Section Titles */
-section h2 {
-  font-size: 2.2rem;
-  margin-bottom: 1rem;
-  color: #00ffff;
+/* === Hide Initially === */
+.hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(0.95);
 }
 
-/* Projects Section */
-#projects {
-  padding: 5rem 2rem;
-  background: radial-gradient(circle at center, #060618, #000010);
+/* === Title Glow === */
+.ui-card h2 {
+  font-size: 2rem;
+  color: #0ff;
   text-align: center;
+  margin-bottom: 1rem;
+  text-shadow: 0 0 15px #0ff;
 }
 
-#projects nav {
-  margin: 1rem auto 2rem;
+/* === Project Repo Cards === */
+repo-card {
+  display: block;
+  margin-bottom: 1rem;
 }
 
-#projects button {
-  background-color: #0a0a1a;
-  color: #00ffff;
-  border: 1px solid #00ffff;
-  margin: 0 0.5rem;
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s ease;
-}
-#projects button:hover {
-  background-color: #002233;
-}
-
-/* Grid Cards */
-.grid-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-  padding: 1rem;
-}
-
-/* Skills */
-#skills {
-  background: #0a0a1f;
-  padding: 4rem 2rem;
-}
+/* === Skills Grid === */
 .skills-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   gap: 1rem;
-  font-size: 1rem;
-  color: #00ffff;
-}
-
-/* About */
-#about-me {
-  background: #000010;
-  padding: 4rem 2rem;
-  font-size: 1rem;
-  line-height: 1.7;
-  color: #cce6ff;
-  text-align: center;
-}
-.resume-button {
-  display: inline-block;
-  margin-top: 1rem;
-  background: #00ffff;
-  color: #000010;
-  padding: 0.6rem 1.2rem;
-  border-radius: 6px;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* Contact */
-#contacts {
-  background: linear-gradient(to bottom, #000010, #060618);
-  padding: 4rem 2rem;
-  text-align: center;
-}
-#contacts ul {
   list-style: none;
-  margin-top: 1rem;
+  text-align: center;
+  font-size: 1.1rem;
+  padding: 0;
 }
-#contacts li {
-  margin: 0.4rem 0;
-}
-#contacts a {
-  color: #00ffff;
-  text-decoration: none;
+.skills-grid li {
+  background: rgba(255, 255, 255, 0.05);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 6px #0ff2;
 }
 
-/* Footer */
-footer {
-  background: #000010;
-  padding: 1rem;
-  font-size: 0.9rem;
-  text-align: center;
-  color: #666;
+/* === Responsive Card Scroll === */
+.ui-card::-webkit-scrollbar {
+  width: 8px;
+}
+.ui-card::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ui-card::-webkit-scrollbar-thumb {
+  background: #0ff;
+  border-radius: 4px;
 }
