@@ -4,62 +4,59 @@ class RepoCard extends HTMLElement {
     this.attachShadow({ mode: 'open' });
   }
 
-  set repo(data) {
+  set repo(repoData) {
     const {
       name,
+      description,
       html_url,
-      description = "No description provided.",
-      language = "Unknown",
-      stargazers_count = 0,
-      forks_count = 0,
-    } = data;
+      stargazers_count,
+      language,
+      homepage
+    } = repoData;
 
     this.shadowRoot.innerHTML = `
       <style>
         :host {
           display: block;
-          background: rgba(22, 27, 34, 0.6);
-          backdrop-filter: blur(8px);
-          border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.05);
-          box-shadow: 0 4px 30px rgba(0, 0, 0, 0.25);
-          padding: 1.25rem;
-          transition: transform 0.3s ease, box-shadow 0.3s ease;
-          transform-style: preserve-3d;
-          perspective: 1000px;
+          background: rgba(10, 20, 30, 0.8);
+          border: 1px solid rgba(0, 255, 255, 0.2);
+          border-radius: 10px;
+          padding: 1rem;
+          margin-bottom: 1rem;
+          box-shadow: 0 0 12px rgba(0,255,255,0.15);
+          transition: transform 0.3s ease;
         }
-
         :host(:hover) {
-          transform: rotateX(6deg) rotateY(-6deg) scale(1.03);
-          box-shadow: 0 10px 40px rgba(88, 166, 255, 0.35);
+          transform: scale(1.02);
         }
-
         h3 {
+          color: #0ff;
           margin: 0 0 0.5rem;
-          color: #58a6ff;
-          font-size: 1.2rem;
         }
-
         p {
-          font-size: 0.95rem;
-          color: #8b949e;
-          margin-bottom: 0.8rem;
+          font-size: 0.9rem;
+          color: #ccc;
         }
-
         .meta {
+          margin-top: 0.5rem;
           font-size: 0.8rem;
-          color: #c9d1d9;
+          color: #999;
         }
-
         a {
-          color: #58a6ff;
+          color: #0ff;
           text-decoration: none;
+        }
+        a:hover {
+          text-decoration: underline;
         }
       </style>
       <div>
         <h3><a href="${html_url}" target="_blank">${name}</a></h3>
-        <p>${description}</p>
-        <div class="meta">⭐ ${stargazers_count} | 🍴 ${forks_count} | 💻 ${language}</div>
+        <p>${description || 'No description'}</p>
+        <div class="meta">
+          ⭐ ${stargazers_count} • ${language || 'Unknown'}
+          ${homepage ? ` • <a href="${homepage}" target="_blank">Live</a>` : ''}
+        </div>
       </div>
     `;
   }
