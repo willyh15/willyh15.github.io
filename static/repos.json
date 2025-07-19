@@ -1,37 +1,47 @@
 [
   {
-    "name": "ghosttrigger",
-    "html_url": "https://github.com/willyh15/ghosttrigger",
-    "description": "Trigger the R-SIM menu, spoof MGCopyAnswer, and automate baseband commands",
+    "name": "GhostTrigger",
+    "description": "Jailbreak tweak + LLM agent combo for triggering R-SIM menus and spoofing device IDs",
+    "html_url": "https://github.com/willyh15/GhostTrigger",
+    "stargazers_count": 48,
     "language": "Objective-C",
-    "topics": ["jailbreak", "spoof", "sim", "baseband", "telephony"]
+    "homepage": null,
+    "topics": ["Jailbreak", "Automation", "LLM", "R-SIM"]
   },
   {
     "name": "job-rotator-cli",
+    "description": "CLI to scrape and rotate job applications across top remote platforms using AI",
     "html_url": "https://github.com/willyh15/job-rotator-cli",
-    "description": "CLI to rotate tech job listings using filters and GitHub Actions",
+    "stargazers_count": 32,
     "language": "Python",
-    "topics": ["ci", "automation", "jobs", "cli", "fullstack"]
+    "homepage": null,
+    "topics": ["DevOps", "CLI", "Jobs", "Automation"]
   },
   {
-    "name": "viral",
-    "html_url": "https://github.com/willyh15/viral",
-    "description": "LLM-powered TikTok growth engine using SvelteKit + Supabase",
+    "name": "viral-tiktok-ai",
+    "description": "AI-powered tool for generating viral TikTok captions, hooks, and auto-posting",
+    "html_url": "https://github.com/willyh15/viral-tiktok-ai",
+    "stargazers_count": 55,
     "language": "TypeScript",
-    "topics": ["svelte", "supabase", "openrouter", "fullstack", "ai"]
+    "homepage": "https://viral.willyh15.dev",
+    "topics": ["FullStack", "AI", "Social", "SvelteKit"]
+  },
+  {
+    "name": "GhostSimCtl",
+    "description": "Swift CLI to simulate SIM eject/insert and trigger ICCID updates using CoreTelephony",
+    "html_url": "https://github.com/willyh15/GhostSimCtl",
+    "stargazers_count": 27,
+    "language": "Swift",
+    "homepage": null,
+    "topics": ["Cybersecurity", "iOS", "Telephony", "Spoof"]
   },
   {
     "name": "devops-for-hackers",
+    "description": "A complete guide and tools to launch secure DevOps pipelines from scratch",
     "html_url": "https://github.com/willyh15/devops-for-hackers",
-    "description": "Infrastructure recipes for solo hackers using Docker, GitHub Actions, and Terraform",
+    "stargazers_count": 61,
     "language": "Shell",
-    "topics": ["docker", "github-actions", "terraform", "devops", "infra"]
-  },
-  {
-    "name": "aircrack-ios",
-    "html_url": "https://github.com/willyh15/aircrack-ios",
-    "description": "Port of aircrack-ng utilities for jailbroken iPhones running Dopamine",
-    "language": "C",
-    "topics": ["aircrack", "pentest", "security", "ios", "jailbreak"]
+    "homepage": null,
+    "topics": ["DevOps", "Security", "GitHub Actions", "CI/CD"]
   }
 ]
