@@ -1,88 +1,68 @@
-import * as THREE from 'https://cdn.skypack.dev/three@0.158.0';
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.158.0/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'https://cdn.skypack.dev/three@0.158.0/examples/jsm/loaders/GLTFLoader.js';
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
 
-// Scene Setup
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x000010);
+let scene, camera, renderer, stars = [];
 
-// Camera
-const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 2000);
-camera.position.set(0, 2, 6);
-
-// Renderer
-const renderer = new THREE.WebGLRenderer({ antialias: true, canvas: document.getElementById('space-scene') });
-renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setPixelRatio(window.devicePixelRatio);
-
-// Controls
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
-controls.dampingFactor = 0.1;
-controls.rotateSpeed = 0.5;
-
-// Lighting
-const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-scene.add(ambientLight);
-const pointLight = new THREE.PointLight(0x00ffff, 2, 100);
-pointLight.position.set(10, 10, 10);
-scene.add(pointLight);
-
-// Stars
-function addStar() {
-  const geometry = new THREE.SphereGeometry(0.05, 8, 8);
-  const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
-  const star = new THREE.Mesh(geometry, material);
-
-  const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(80));
-  star.position.set(x, y, z);
-  scene.add(star);
-}
-Array(300).fill().forEach(addStar);
-
-// Planet
-const planetGeometry = new THREE.SphereGeometry(1.5, 64, 64);
-const planetMaterial = new THREE.MeshStandardMaterial({
-  color: 0x2222ff,
-  emissive: 0x111133,
-  roughness: 0.4,
-});
-const planet = new THREE.Mesh(planetGeometry, planetMaterial);
-planet.position.set(-3, 1, -5);
-scene.add(planet);
-
-// Space Shuttle Model
-let shuttle;
-const loader = new GLTFLoader();
-loader.load('static/models/shuttle.glb', (gltf) => {
-  shuttle = gltf.scene;
-  shuttle.scale.set(0.4, 0.4, 0.4);
-  shuttle.position.set(1, 0.5, 0);
-  scene.add(shuttle);
-}, undefined, (error) => {
-  console.error('Error loading GLB model:', error);
-});
-
-// Animation Loop
-function animate() {
-  requestAnimationFrame(animate);
-
-  planet.rotation.y += 0.001;
-
-  if (shuttle) {
-    shuttle.rotation.y += 0.005;
-    shuttle.position.y = 0.5 + Math.sin(Date.now() * 0.001) * 0.2;
-  }
-
-  controls.update();
-  renderer.render(scene, camera);
-}
-
+init();
 animate();
 
-// Resize Handling
-window.addEventListener('resize', () => {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
+function init() {
+  scene = new THREE.Scene();
+
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera.position.z = 5;
+
+  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('space-scene'), alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
-});
+  renderer.setPixelRatio(window.devicePixelRatio);
+
+  // Stars
+  const starGeometry = new THREE.SphereGeometry(0.05, 24, 24);
+  const starMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+  for (let i = 0; i < 600; i++) {
+    const star = new THREE.Mesh(starGeometry, starMaterial);
+    star.position.set(
+      THREE.MathUtils.randFloatSpread(100),
+      THREE.MathUtils.randFloatSpread(100),
+      THREE.MathUtils.randFloatSpread(100)
+    );
+    scene.add(star);
+    stars.push(star);
+  }
+
+  // Shuttle
+  const shuttleGeometry = new THREE.ConeGeometry(0.1, 0.4, 8);
+  const shuttleMaterial = new THREE.MeshStandardMaterial({ color: 0x00ffff, flatShading: true });
+  const shuttle = new THREE.Mesh(shuttleGeometry, shuttleMaterial);
+  shuttle.rotation.x = Math.PI / 2;
+  shuttle.position.set(0, 0, 0);
+  scene.add(shuttle);
+
+  // Lighting
+  const light = new THREE.PointLight(0x00ffff, 1, 100);
+  light.position.set(0, 0, 5);
+  scene.add(light);
+
+  const ambient = new THREE.AmbientLight(0x222222);
+  scene.add(ambient);
+
+  // Controls
+  const controls = new OrbitControls(camera, renderer.domElement);
+  controls.enableZoom = false;
+  controls.enablePan = false;
+  controls.autoRotate = true;
+  controls.autoRotateSpeed = 0.8;
+
+  window.addEventListener('resize', () => {
+    const { innerWidth, innerHeight } = window;
+    camera.aspect = innerWidth / innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(innerWidth, innerHeight);
+  });
+}
+
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
