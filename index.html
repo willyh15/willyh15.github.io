@@ -2,48 +2,44 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Will Harrison — Space Portfolio</title>
+  <title>Will Harrison | DevOps • Full Stack • Cybersecurity</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000010" />
+  <meta name="description" content="Interactive 3D GitHub portfolio of Will Harrison — DevOps, Full Stack, Cybersecurity" />
   <link rel="stylesheet" href="styles/style.css" />
+  <link rel="icon" href="static/favicon.ico" />
+  <script type="module" src="js/space-scene.js"></script>
 </head>
 <body>
+  <!-- 3D Background Canvas -->
   <canvas id="space-scene"></canvas>
 
-  <!-- Floating UI Panels -->
-  <div id="ui-projects" class="ui-card hidden">
-    <h2>Projects</h2>
-    <div class="card-content">
-      <repo-card title="ghosttrigger" desc="Trigger the R-SIM menu and automate baseband commands." lang="Objective-C" stars="0" forks="0"></repo-card>
-      <repo-card title="job-rotator-cli" desc="CLI to rotate tech job listings using filters and GitHub Actions." lang="Python" stars="0" forks="0"></repo-card>
+  <!-- Floating GitHub Badge -->
+  <div class="badge">
+    <a href="https://github.com/willyh15" target="_blank">
+      <img src="https://img.shields.io/github/followers/willyh15?label=Follow&style=social" alt="GitHub followers" />
+    </a>
+  </div>
+
+  <!-- UI Cards Placeholder (will activate later on click) -->
+  <div id="ui-card" class="hidden">
+    <div class="card-header">
+      <h2 id="card-title">Title</h2>
+      <button id="close-btn">✕</button>
     </div>
+    <div id="card-content">Coming soon...</div>
   </div>
 
-  <div id="ui-skills" class="ui-card hidden">
-    <h2>Skills</h2>
-    <ul class="skills-grid">
-      <li>HTML</li><li>CSS</li><li>JS</li><li>Python</li>
-      <li>Docker</li><li>Security</li><li>SQLite</li><li>Supabase</li>
-      <li>GitHub Actions</li>
-    </ul>
-  </div>
+  <!-- Footer -->
+  <footer>
+    🚀 Built in Three.js • Inspired by Bruno Simon • © 2025 Will Harrison
+  </footer>
 
-  <div id="ui-about" class="ui-card hidden">
-    <h2>About</h2>
-    <p>DevOps engineer, full stack developer, and security-focused creator. I love deep system hooks, automation, and performance design.</p>
-  </div>
-
-  <div id="ui-contact" class="ui-card hidden">
-    <h2>Contact</h2>
-    <p>Email: <a href="mailto:will@ghosttrigger.dev">will@ghosttrigger.dev</a></p>
-    <p>GitHub: <a href="https://github.com/willyh15" target="_blank">willyh15</a></p>
-  </div>
-
-  <!-- Custom Web Component for GitHub Repos -->
-  <script type="module" src="components/repo-card.js"></script>
-  <!-- Three.js and Main Scene -->
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/examples/js/loaders/GLTFLoader.js"></script>
-  <script type="module" src="js/space-scene.js"></script>
-  <script type="module" src="js/ui-panels.js"></script>
+  <script>
+    // Simple close for upcoming UI card (can wire up later)
+    document.getElementById('close-btn').onclick = () => {
+      document.getElementById('ui-card').classList.add('hidden');
+    };
+  </script>
 </body>
 </html>
