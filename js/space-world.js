@@ -3,6 +3,7 @@ import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.m
 import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/OrbitControls.js';
 import { FontLoader } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/geometries/TextGeometry.js';
+import '../components/floating-card.js';
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
@@ -22,19 +23,16 @@ function init() {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
 
-  // Orbit Controls
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableZoom = true;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
 
-  // Lighting
   const light = new THREE.PointLight(0xffffff, 1, 100);
   light.position.set(10, 10, 10);
   scene.add(light);
   scene.add(new THREE.AmbientLight(0x222222));
 
-  // Create planets
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
   const positions = [
     [-5, 1, -2],
@@ -69,7 +67,6 @@ function init() {
     });
   });
 
-  // Mouse interaction
   window.addEventListener('click', onClick, false);
   window.addEventListener('resize', onResize);
 }
@@ -82,7 +79,10 @@ function onClick(event) {
   const intersects = raycaster.intersectObjects(planets);
   if (intersects.length > 0) {
     const name = intersects[0].object.name;
-    alert(`${name} planet clicked!`); // Replace with card display logic later
+    const card = document.createElement('floating-card');
+    card.setAttribute('title', name);
+    card.setAttribute('content', `This is the ${name} section. Add your content here.`);
+    document.body.appendChild(card);
   }
 }
 
