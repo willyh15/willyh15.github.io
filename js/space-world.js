@@ -2,12 +2,14 @@
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
 
-init();
-animate();
+document.addEventListener('DOMContentLoaded', () => {
+  init();
+  animate();
+});
 
 function init() {
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 2, 8);
 
   renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('space-scene'), alpha: true });
