@@ -8,38 +8,21 @@
   <meta name="description" content="Interactive 3D GitHub portfolio of Will Harrison — DevOps, Full Stack, Cybersecurity" />
   <link rel="stylesheet" href="styles/style.css" />
   <link rel="icon" href="static/favicon.ico" />
+
+  <script type="module" src="components/floating-card.js"></script>
   <script type="module" src="js/space-world.js"></script>
 </head>
 <body>
-  <!-- 3D Background Canvas -->
   <canvas id="space-scene"></canvas>
 
-  <!-- Floating GitHub Badge -->
   <div class="badge">
     <a href="https://github.com/willyh15" target="_blank">
       <img src="https://img.shields.io/github/followers/willyh15?label=Follow&style=social" alt="GitHub followers" />
     </a>
   </div>
 
-  <!-- UI Cards Placeholder (will activate later on click) -->
-  <div id="ui-card" class="hidden">
-    <div class="card-header">
-      <h2 id="card-title">Title</h2>
-      <button id="close-btn">✕</button>
-    </div>
-    <div id="card-content">Coming soon...</div>
-  </div>
-
-  <!-- Footer -->
   <footer>
     🚀 Built in Three.js • Inspired by Bruno Simon • © 2025 Will Harrison
   </footer>
-
-  <script>
-    // Simple close for upcoming UI card (can wire up later)
-    document.getElementById('close-btn').onclick = () => {
-      document.getElementById('ui-card').classList.add('hidden');
-    };
-  </script>
 </body>
 </html>
