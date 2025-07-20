@@ -1,4 +1,4 @@
-/* === Reset === */
+/* Reset and Base */
 * {
   margin: 0;
   padding: 0;
@@ -7,93 +7,93 @@
 html, body {
   width: 100%;
   height: 100%;
+  background-color: #000010;
   font-family: 'Segoe UI', sans-serif;
-  background: black;
+  color: #e0e6f0;
   overflow: hidden;
-  color: #eee;
+  position: relative;
 }
 
-/* === Canvas Background === */
-canvas#space-scene {
-  position: fixed;
-  top: 0;
-  left: 0;
+/* 3D Canvas */
+#space-scene {
+  position: absolute;
+  top: 0; left: 0;
   width: 100%;
   height: 100%;
   display: block;
   z-index: 0;
-  background-color: #000;
 }
 
-/* === UI Card Panels === */
-.ui-card {
+/* GitHub Badge */
+.badge {
   position: fixed;
-  top: 50%;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 10;
+}
+.badge img {
+  filter: drop-shadow(0 0 5px #00ffff);
+}
+
+/* UI Card (Popup Panel) */
+#ui-card {
+  position: fixed;
+  top: 10%;
   left: 50%;
-  transform: translate(-50%, -50%) scale(1);
-  background: rgba(20, 20, 30, 0.9);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
-  padding: 2rem;
-  z-index: 2;
+  transform: translateX(-50%);
   width: 90%;
-  max-width: 600px;
-  max-height: 80%;
-  overflow-y: auto;
-  backdrop-filter: blur(15px);
-  transition: opacity 0.4s ease, transform 0.3s ease;
+  max-width: 480px;
+  background: rgba(0, 8, 20, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid #00ffff;
+  box-shadow: 0 0 20px #00ffff88;
+  padding: 1.5rem;
+  border-radius: 10px;
+  z-index: 20;
+  animation: fadeIn 0.4s ease-in-out;
 }
-
-/* === Hide Initially === */
 .hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, -50%) scale(0.95);
+  display: none;
 }
 
-/* === Title Glow === */
-.ui-card h2 {
-  font-size: 2rem;
-  color: #0ff;
-  text-align: center;
-  margin-bottom: 1rem;
-  text-shadow: 0 0 15px #0ff;
-}
-
-/* === Project Repo Cards === */
-repo-card {
-  display: block;
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #00ffff55;
   margin-bottom: 1rem;
 }
+#card-title {
+  font-size: 1.4rem;
+  color: #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+#close-btn {
+  background: none;
+  border: none;
+  color: #00ffff;
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+#close-btn:hover {
+  color: #ff0066;
+}
 
-/* === Skills Grid === */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
-  list-style: none;
+/* Footer */
+footer {
+  position: fixed;
+  bottom: 1rem;
+  width: 100%;
   text-align: center;
-  font-size: 1.1rem;
-  padding: 0;
-}
-.skills-grid li {
-  background: rgba(255, 255, 255, 0.05);
-  padding: 0.5rem 1rem;
-  border-radius: 8px;
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 0 6px #0ff2;
+  font-size: 0.9rem;
+  color: #888;
+  z-index: 5;
+  text-shadow: 0 0 5px #00ffff44;
 }
 
-/* === Responsive Card Scroll === */
-.ui-card::-webkit-scrollbar {
-  width: 8px;
-}
-.ui-card::-webkit-scrollbar-track {
-  background: transparent;
-}
-.ui-card::-webkit-scrollbar-thumb {
-  background: #0ff;
-  border-radius: 4px;
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, -10%); }
+  to { opacity: 1; transform: translate(-50%, 0); }
 }
