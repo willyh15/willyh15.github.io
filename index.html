@@ -9,18 +9,30 @@
   <link rel="stylesheet" href="styles/style.css" />
   <link rel="icon" href="static/favicon.ico" />
 
+  <!-- ✅ Use direct script includes for Three.js and helpers -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/loaders/FontLoader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/geometries/TextGeometry.js"></script>
+
+  <!-- ✅ Module for custom floating card component -->
   <script type="module" src="components/floating-card.js"></script>
-  <script type="module" src="js/space-world.js"></script>
+
+  <!-- ✅ Regular script (no imports) for your scene logic -->
+  <script src="js/space-world.js"></script>
 </head>
 <body>
+  <!-- 3D Canvas Background -->
   <canvas id="space-scene"></canvas>
 
+  <!-- Floating GitHub Badge -->
   <div class="badge">
     <a href="https://github.com/willyh15" target="_blank">
       <img src="https://img.shields.io/github/followers/willyh15?label=Follow&style=social" alt="GitHub followers" />
     </a>
   </div>
 
+  <!-- Footer -->
   <footer>
     🚀 Built in Three.js • Inspired by Bruno Simon • © 2025 Will Harrison
   </footer>
