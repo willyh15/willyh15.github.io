@@ -9,23 +9,25 @@
   <link rel="stylesheet" href="styles/style.css" />
   <link rel="icon" href="static/favicon.ico" />
 
-  <!-- ✅ Three.js core -->
+  <!-- ✅ Three.js + helpers (non-module) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
-
-  <!-- ✅ OrbitControls (patch into THREE) -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/OrbitControls.js"></script>
-  <script>
-    THREE.OrbitControls = OrbitControls;
-  </script>
-
-  <!-- ✅ FontLoader and TextGeometry -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/loaders/FontLoader.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/geometries/TextGeometry.js"></script>
+
+  <!-- ✅ Shim: make OrbitControls available under THREE namespace -->
+  <script>
+    if (typeof THREE !== 'undefined') {
+      THREE.OrbitControls = THREE.OrbitControls || window.OrbitControls;
+      THREE.FontLoader = THREE.FontLoader || window.FontLoader;
+      THREE.TextGeometry = THREE.TextGeometry || window.TextGeometry;
+    }
+  </script>
 
   <!-- ✅ Floating card component -->
   <script type="module" src="components/floating-card.js"></script>
 
-  <!-- ✅ Main scene script -->
+  <!-- ✅ Main scene logic -->
   <script src="js/space-world.js"></script>
 </head>
 <body>
