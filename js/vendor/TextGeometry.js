@@ -1,6 +1,6 @@
 import {
 	ExtrudeGeometry
-} from 'three';
+} from "./three.module.js";
 
 /**
  * A class for generating text as a single geometry. It is constructed by providing a string of text, and a set of
@@ -23,7 +23,7 @@ import {
  * ```
  *
  * @augments ExtrudeGeometry
- * @three_import import { TextGeometry } from 'three/addons/geometries/TextGeometry.js';
+ * @three_import import { TextGeometry } from "./three.module.js"addons/geometries/TextGeometry.js';
  */
 class TextGeometry extends ExtrudeGeometry {
 
