@@ -16,28 +16,28 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Create vendor directories
+      - name: Create vendor and font directories
         run: mkdir -p js/vendor static/fonts
 
       - name: Download Three.js core
-        run: curl -o js/vendor/three.module.js https://unpkg.com/three@0.159.0/build/three.module.js
+        run: curl -L -o js/vendor/three.module.js https://unpkg.com/three@0.159.0/build/three.module.js
 
       - name: Download OrbitControls
-        run: curl -o js/vendor/OrbitControls.js https://unpkg.com/three@0.159.0/examples/jsm/controls/OrbitControls.js
+        run: curl -L -o js/vendor/OrbitControls.js https://unpkg.com/three@0.159.0/examples/jsm/controls/OrbitControls.js
 
       - name: Download FontLoader
-        run: curl -o js/vendor/FontLoader.js https://unpkg.com/three@0.159.0/examples/jsm/loaders/FontLoader.js
+        run: curl -L -o js/vendor/FontLoader.js https://unpkg.com/three@0.159.0/examples/jsm/loaders/FontLoader.js
 
       - name: Download TextGeometry
-        run: curl -o js/vendor/TextGeometry.js https://unpkg.com/three@0.159.0/examples/jsm/geometries/TextGeometry.js
+        run: curl -L -o js/vendor/TextGeometry.js https://unpkg.com/three@0.159.0/examples/jsm/geometries/TextGeometry.js
 
       - name: Download WebFontLoader
-        run: curl -o js/vendor/webfontloader.js https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js
+        run: curl -L -o js/vendor/webfontloader.js https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js
 
       - name: Download helvetiker font
-        run: curl -o static/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
+        run: curl -L -o static/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
 
-      - name: Setup Pages
+      - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
