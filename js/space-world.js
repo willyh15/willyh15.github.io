@@ -1,15 +1,30 @@
+// File: js/space-world.js
+console.log('[BOOT] space-world.js loaded');
+
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
 
-THREE.TextGeometry = TextGeometry;
-THREE.FontLoader = FontLoader;
+try {
+  if (typeof THREE === 'undefined') throw new Error('THREE is not defined');
+  console.log('[THREE] OK');
+
+  if (typeof TextGeometry === 'undefined') throw new Error('TextGeometry is undefined');
+  if (typeof FontLoader === 'undefined') throw new Error('FontLoader is undefined');
+
+  THREE.TextGeometry = TextGeometry;
+  THREE.FontLoader = FontLoader;
+  console.log('[THREE] TextGeometry and FontLoader assigned');
+} catch (e) {
+  console.error('[IMPORT FAIL]', e);
+}
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
   if (!canvas) {
-    console.error("Canvas element not found");
+    console.error('[CANVAS] #space-scene not found');
     return;
   }
+  console.log('[DOM] Canvas found');
   init(canvas);
   animate();
 });
@@ -45,30 +60,41 @@ function init(canvas) {
   ];
 
   const fontLoader = new THREE.FontLoader();
-  fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
-    sections.forEach((label, i) => {
-      const planet = new THREE.Mesh(
-        new THREE.SphereGeometry(0.8, 32, 32),
-        new THREE.MeshStandardMaterial({ color: 0x00ffff })
-      );
-      planet.position.set(...positions[i]);
-      planet.name = label;
-      scene.add(planet);
-      planets.push(planet);
+  fontLoader.load(
+    'https://threejs.org/examples/fonts/helvetiker_regular.typeface.json',
+    font => {
+      console.log('[FONT] Font loaded successfully');
 
-      const textGeo = new THREE.TextGeometry(label, {
-        font: font,
-        size: 0.3,
-        height: 0.05,
+      sections.forEach((label, i) => {
+        const planet = new THREE.Mesh(
+          new THREE.SphereGeometry(0.8, 32, 32),
+          new THREE.MeshStandardMaterial({ color: 0x00ffff })
+        );
+        planet.position.set(...positions[i]);
+        planet.name = label;
+        scene.add(planet);
+        planets.push(planet);
+
+        const textGeo = new THREE.TextGeometry(label, {
+          font: font,
+          size: 0.3,
+          height: 0.05,
+        });
+        const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeo, textMat);
+        textGeo.computeBoundingBox();
+        const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+        textMesh.position.set(planet.position.x + centerOffset, planet.position.y + 1.2, planet.position.z);
+        scene.add(textMesh);
       });
-      const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const textMesh = new THREE.Mesh(textGeo, textMat);
-      textGeo.computeBoundingBox();
-      const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
-      textMesh.position.set(planet.position.x + centerOffset, planet.position.y + 1.2, planet.position.z);
-      scene.add(textMesh);
-    });
-  });
+
+      console.log('[SCENE] Children count:', scene.children.length);
+    },
+    undefined,
+    err => {
+      console.error('[FONT ERROR]', err);
+    }
+  );
 
   window.addEventListener('click', onClick, false);
   window.addEventListener('resize', onResize);
@@ -98,4 +124,5 @@ function onResize() {
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
+  console.log('[ANIMATE] Frame rendered');
 }
