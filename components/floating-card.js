@@ -21,6 +21,7 @@ class FloatingCard extends HTMLElement {
     });
 
     wrapper.append(close, title, content);
+
     const style = document.createElement('style');
     style.textContent = `
       .floating-card {
@@ -30,7 +31,7 @@ class FloatingCard extends HTMLElement {
         width: 90%;
         max-width: 500px;
         transform: translate(-50%, -50%);
-        background: rgba(0,0,10,0.9);
+        background: rgba(0, 0, 10, 0.9);
         color: #00ffff;
         border: 1px solid #00ffff55;
         border-radius: 12px;
@@ -44,6 +45,7 @@ class FloatingCard extends HTMLElement {
       .floating-card h3 {
         margin-top: 0;
         font-size: 1.6rem;
+        color: #00ffff;
       }
 
       .floating-card p {
@@ -63,13 +65,24 @@ class FloatingCard extends HTMLElement {
         cursor: pointer;
       }
 
+      .close-btn:hover {
+        color: #ffffff;
+      }
+
       @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.9) translate(-50%, -50%); }
-        to { opacity: 1; transform: scale(1) translate(-50%, -50%); }
+        from {
+          opacity: 0;
+          transform: scale(0.9) translate(-50%, -50%);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translate(-50%, -50%);
+        }
       }
     `;
 
     this.shadowRoot.append(style, wrapper);
   }
 }
+
 customElements.define('floating-card', FloatingCard);
