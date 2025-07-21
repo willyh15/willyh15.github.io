@@ -1,4 +1,3 @@
-// File: js/space-world.js
 console.log('[BOOT] space-world.js loaded');
 
 let scene, camera, renderer, raycaster, mouse;
