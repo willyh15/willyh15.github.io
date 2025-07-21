@@ -1,26 +1,22 @@
 console.log('[BOOT] space-world.js loaded');
 
+import * as THREE from './vendor/three.module.js';
+import { OrbitControls } from './vendor/OrbitControls.js';
+import { FontLoader } from './vendor/FontLoader.js';
+import { TextGeometry } from './vendor/TextGeometry.js';
+
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
 
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
   if (!canvas) return console.error('[CANVAS] Missing #space-scene');
 
-  try {
-    const THREE = await import('/js/vendor/three.module.js');
-    const { OrbitControls } = await import('/js/vendor/OrbitControls.js');
-    const { FontLoader } = await import('/js/vendor/FontLoader.js');
-    const { TextGeometry } = await import('/js/vendor/TextGeometry.js');
-
-    init(canvas, THREE, OrbitControls, FontLoader, TextGeometry);
-    animate();
-  } catch (e) {
-    console.error('[IMPORT FAIL]', e);
-  }
+  init(canvas);
+  animate();
 });
 
-function init(canvas, THREE, OrbitControls, FontLoader, TextGeometry) {
+function init(canvas) {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 2, 8);
@@ -52,7 +48,7 @@ function init(canvas, THREE, OrbitControls, FontLoader, TextGeometry) {
 
   const fontLoader = new FontLoader();
   fontLoader.load(
-    '/static/fonts/helvetiker_regular.typeface.json',
+    './static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
 
