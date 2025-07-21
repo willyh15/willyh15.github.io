@@ -37,12 +37,13 @@ jobs:
       - name: Download helvetiker font
         run: curl -L -o static/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
 
-      - name: Copy project files to public directory
+      - name: Copy project files to public directory (excluding itself)
         run: |
-          cp -r . public/
-          cp -r js/vendor public/js/
-          cp -r static/fonts public/static/
-
+          mkdir public
+          rsync -av --exclude='public' ./ public/
+          mkdir -p public/js/vendor public/static/fonts
+          cp -r js/vendor/* public/js/vendor/
+          cp -r static/fonts/* public/static/fonts/
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
