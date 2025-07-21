@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create vendor and font directories
-        run: mkdir -p js/vendor static/fonts
+        run: mkdir -p js/vendor static/fonts public/js/vendor public/static/fonts
 
       - name: Download Three.js core
         run: curl -L -o js/vendor/three.module.js https://unpkg.com/three@0.159.0/build/three.module.js
@@ -37,13 +37,19 @@ jobs:
       - name: Download helvetiker font
         run: curl -L -o static/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
 
+      - name: Copy project files to public directory
+        run: |
+          cp -r . public/
+          cp -r js/vendor public/js/
+          cp -r static/fonts public/static/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: public
 
   deploy:
     needs: build
