@@ -1,87 +1,71 @@
-// File: components/floating-card.js
 class FloatingCard extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
 
     const wrapper = document.createElement('div');
-    wrapper.className = 'floating-card';
+    wrapper.setAttribute('part', 'wrapper');
 
-    const title = document.createElement('h3');
-    title.textContent = this.getAttribute('title') || 'Title';
+    const title = document.createElement('div');
+    title.setAttribute('part', 'title');
+    title.textContent = this.getAttribute('title') || 'Untitled';
 
-    const content = document.createElement('p');
-    content.textContent = this.getAttribute('content') || 'Placeholder content for this section.';
+    const content = document.createElement('div');
+    content.setAttribute('part', 'content');
+    content.textContent = this.getAttribute('content') || 'No content provided.';
 
-    const close = document.createElement('button');
-    close.textContent = '×';
-    close.className = 'close-btn';
-    close.addEventListener('click', () => {
-      this.remove();
-    });
-
-    wrapper.append(close, title, content);
+    wrapper.appendChild(title);
+    wrapper.appendChild(content);
 
     const style = document.createElement('style');
     style.textContent = `
-      .floating-card {
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        width: 90%;
-        max-width: 500px;
-        transform: translate(-50%, -50%);
-        background: rgba(0, 0, 10, 0.9);
-        color: #00ffff;
-        border: 1px solid #00ffff55;
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 0 20px #00ffff55;
+      :host {
+        display: block;
+      }
+
+      div[part="wrapper"] {
+        font-family: 'Segoe UI', sans-serif;
+        background: rgba(20, 20, 30, 0.9);
+        color: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
         backdrop-filter: blur(12px);
-        z-index: 9999;
-        animation: fadeIn 0.3s ease-out;
+        box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+        max-width: 400px;
+        text-align: center;
+        animation: fadeIn 0.4s ease-out;
       }
 
-      .floating-card h3 {
-        margin-top: 0;
-        font-size: 1.6rem;
-        color: #00ffff;
+      div[part="title"] {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 1rem;
       }
 
-      .floating-card p {
+      div[part="content"] {
         font-size: 1rem;
         line-height: 1.5;
-        color: #e0faff;
-      }
-
-      .close-btn {
-        position: absolute;
-        top: 0.4rem;
-        right: 0.8rem;
-        background: transparent;
-        color: #00ffff;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-      }
-
-      .close-btn:hover {
-        color: #ffffff;
       }
 
       @keyframes fadeIn {
         from {
           opacity: 0;
-          transform: scale(0.9) translate(-50%, -50%);
+          transform: translateY(-20px);
         }
         to {
           opacity: 1;
-          transform: scale(1) translate(-50%, -50%);
+          transform: translateY(0);
         }
       }
     `;
 
     this.shadowRoot.append(style, wrapper);
+  }
+
+  connectedCallback() {
+    this.addEventListener('click', () => {
+      this.remove();
+    });
   }
 }
 
