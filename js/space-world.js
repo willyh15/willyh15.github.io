@@ -2,6 +2,10 @@
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
 
+// ✅ Patch Three.js global helpers from CDN
+THREE.TextGeometry = TextGeometry;
+THREE.FontLoader = FontLoader;
+
 document.addEventListener('DOMContentLoaded', () => {
   init();
   animate();
@@ -37,7 +41,7 @@ function init() {
     [2, -2, 3],
   ];
 
-  const fontLoader = new FontLoader();
+  const fontLoader = new THREE.FontLoader();
   fontLoader.load('https://threejs.org/examples/fonts/helvetiker_regular.typeface.json', font => {
     sections.forEach((label, i) => {
       const planet = new THREE.Mesh(
@@ -49,7 +53,7 @@ function init() {
       scene.add(planet);
       planets.push(planet);
 
-      const textGeo = new TextGeometry(label, {
+      const textGeo = new THREE.TextGeometry(label, {
         font: font,
         size: 0.3,
         height: 0.05,
