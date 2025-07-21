@@ -39,11 +39,12 @@ jobs:
 
       - name: Copy project files to public directory (excluding itself)
         run: |
-          mkdir public
+          mkdir -p public
           rsync -av --exclude='public' ./ public/
           mkdir -p public/js/vendor public/static/fonts
           cp -r js/vendor/* public/js/vendor/
           cp -r static/fonts/* public/static/fonts/
+
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
