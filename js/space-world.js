@@ -3,20 +3,6 @@ console.log('[BOOT] space-world.js loaded');
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
-const TextGeometry = THREE.TextGeometry;
-const FontLoader = THREE.FontLoader;
-
-try {
-  if (typeof THREE === 'undefined') throw new Error('THREE is not defined');
-  console.log('[THREE] OK');
-
-  if (typeof TextGeometry === 'undefined') throw new Error('TextGeometry is undefined');
-  if (typeof FontLoader === 'undefined') throw new Error('FontLoader is undefined');
-  
-  console.log('[THREE] TextGeometry and FontLoader assigned');
-} catch (e) {
-  console.error('[IMPORT FAIL]', e);
-}
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
@@ -30,6 +16,11 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function init(canvas) {
+  if (typeof THREE === 'undefined') {
+    console.error('[THREE] not loaded');
+    return;
+  }
+
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 2, 8);
@@ -41,7 +32,7 @@ function init(canvas) {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
 
-  const controls = new OrbitControls(camera, renderer.domElement);
+  const controls = new THREE.OrbitControls(camera, renderer.domElement);
   controls.enableZoom = true;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
@@ -80,11 +71,16 @@ function init(canvas) {
           size: 0.3,
           height: 0.05,
         });
-        const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const textMesh = new THREE.Mesh(textGeo, textMat);
         textGeo.computeBoundingBox();
         const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
-        textMesh.position.set(planet.position.x + centerOffset, planet.position.y + 1.2, planet.position.z);
+
+        const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        const textMesh = new THREE.Mesh(textGeo, textMat);
+        textMesh.position.set(
+          planet.position.x + centerOffset,
+          planet.position.y + 1.2,
+          planet.position.z
+        );
         scene.add(textMesh);
       });
 
@@ -124,5 +120,4 @@ function onResize() {
 function animate() {
   requestAnimationFrame(animate);
   renderer.render(scene, camera);
-  console.log('[ANIMATE] Frame rendered');
 }
