@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!canvas) return console.error('[CANVAS] Missing #space-scene');
 
   try {
-    const THREE = await import('../vendor/three.module.js');
-    const { OrbitControls } = await import('../vendor/OrbitControls.js');
-    const { FontLoader } = await import('../vendor/FontLoader.js');
-    const { TextGeometry } = await import('../vendor/TextGeometry.js');
+    const THREE = await import('./js/vendor/three.module.js');
+    const { OrbitControls } = await import('./js/vendor/OrbitControls.js');
+    const { FontLoader } = await import('./js/vendor/FontLoader.js');
+    const { TextGeometry } = await import('./js/vendor/TextGeometry.js');
 
     init(canvas, THREE, OrbitControls, FontLoader, TextGeometry);
     animate();
