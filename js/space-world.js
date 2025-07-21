@@ -1,22 +1,25 @@
-// File: js/space-world.js
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
 
-// ✅ Patch Three.js global helpers from CDN
 THREE.TextGeometry = TextGeometry;
 THREE.FontLoader = FontLoader;
 
 document.addEventListener('DOMContentLoaded', () => {
-  init();
+  const canvas = document.getElementById('space-scene');
+  if (!canvas) {
+    console.error("Canvas element not found");
+    return;
+  }
+  init(canvas);
   animate();
 });
 
-function init() {
+function init(canvas) {
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
   camera.position.set(0, 2, 8);
 
-  renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('space-scene'), alpha: true });
+  renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.setPixelRatio(window.devicePixelRatio);
 
