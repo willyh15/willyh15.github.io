@@ -2,63 +2,33 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <title>Will Harrison | DevOps • Full Stack • Cybersecurity</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>willyh15 | Space Portfolio</title>
-  <link rel="stylesheet" href="styles/style.css" />
+  <meta name="theme-color" content="#000010" />
+  <meta name="description" content="Interactive 3D GitHub portfolio of Will Harrison — DevOps, Full Stack, Cybersecurity" />
 
-  <!-- Self-hosted JS Libraries -->
-  <script src="js/three.js"></script>
-  <script src="js/loaders/GLTFLoader.js"></script>
-  <script src="js/loaders/FontLoader.js"></script>
-  <script src="js/geometries/TextGeometry.js"></script>
-  <script src="js/webfontloader.js"></script>
+  <!-- 🔒 Local styles and favicon -->
+  <link rel="stylesheet" href="styles/style.css" />
+  <link rel="icon" href="static/favicon.ico" />
+
+  <!-- 🧩 Floating card component -->
+  <script type="module" src="components/floating-card.js"></script>
+
+  <!-- 🚀 Main space scene (local + ESM dynamic imports) -->
+  <script type="module" src="js/space-world.js"></script>
 </head>
 
 <body>
-  <!-- Canvas for 3D Scene -->
   <canvas id="space-scene"></canvas>
 
-  <!-- Floating UI Elements -->
-  <header id="site-header">
-    <div class="title-card">
-      <h1 class="glow">Will Harrison</h1>
-      <p class="tagline">🚀 DevOps • Cybersecurity • Full Stack</p>
-    </div>
-  </header>
-
-  <main>
-    <section id="projects" class="card-section">
-      <h2>Projects</h2>
-      <div class="repo-grid" id="repo-container">
-        <!-- Repo cards auto-generated -->
-      </div>
-    </section>
-
-    <section id="skills" class="card-section">
-      <h2>Skills</h2>
-      <div class="skills-grid">
-        <span>Docker</span><span>Kubernetes</span><span>PostgreSQL</span>
-        <span>SvelteKit</span><span>Python</span><span>GitHub Actions</span>
-        <span>C++</span><span>iOS Tweak Dev</span><span>Three.js</span>
-      </div>
-    </section>
-
-    <section id="about-me" class="card-section">
-      <h2>About Me</h2>
-      <p>I’m Will, a UPS driver and indie dev building DevOps + jailbreak + AI tools in public. This is my portfolio. Everything you see is self-hosted and open source.</p>
-    </section>
-
-    <section id="contact" class="card-section">
-      <h2>Contact</h2>
-      <p>Email: <a href="mailto:will@willyh15.dev">will@willyh15.dev</a></p>
-      <p>GitHub: <a href="https://github.com/willyh15" target="_blank">@willyh15</a></p>
-    </section>
-  </main>
+  <div class="badge">
+    <a href="https://github.com/willyh15" target="_blank">
+      <img src="https://img.shields.io/github/followers/willyh15?label=Follow&style=social" alt="GitHub followers" />
+    </a>
+  </div>
 
   <footer>
-    <p>© 2025 Will Harrison • Built with 💻 in space</p>
+    🚀 Built in Three.js • Inspired by Bruno Simon • © 2025 Will Harrison
   </footer>
-
-  <script src="js/space-scene.js" type="module"></script>
 </body>
 </html>
