@@ -8,10 +8,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!canvas) return console.error('[CANVAS] Missing #space-scene');
 
   try {
-    const THREE = await import('./js/vendor/three.module.js');
-    const { OrbitControls } = await import('./js/vendor/OrbitControls.js');
-    const { FontLoader } = await import('./js/vendor/FontLoader.js');
-    const { TextGeometry } = await import('./js/vendor/TextGeometry.js');
+    const THREE = await import('/js/vendor/three.module.js');
+    const { OrbitControls } = await import('/js/vendor/OrbitControls.js');
+    const { FontLoader } = await import('/js/vendor/FontLoader.js');
+    const { TextGeometry } = await import('/js/vendor/TextGeometry.js');
 
     init(canvas, THREE, OrbitControls, FontLoader, TextGeometry);
     animate();
@@ -52,7 +52,7 @@ function init(canvas, THREE, OrbitControls, FontLoader, TextGeometry) {
 
   const fontLoader = new FontLoader();
   fontLoader.load(
-    './static/fonts/helvetiker_regular.typeface.json',
+    '/static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
 
