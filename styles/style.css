@@ -1,99 +1,90 @@
-/* Reset and Base */
+/* ====== Global Reset ====== */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 html, body {
-  width: 100%;
   height: 100%;
-  background-color: #000010;
+  width: 100%;
+  background: #000010;
   font-family: 'Segoe UI', sans-serif;
-  color: #e0e6f0;
   overflow: hidden;
-  position: relative;
 }
 
-/* 3D Canvas */
-#space-scene {
+/* ====== Canvas Fullscreen ====== */
+canvas#space-scene {
+  display: block;
   position: absolute;
   top: 0; left: 0;
-  width: 100%;
-  height: 100%;
-  display: block;
+  width: 100vw;
+  height: 100vh;
   z-index: 0;
 }
 
-/* GitHub Badge */
-.badge {
+/* ====== Floating Card Web Component ====== */
+floating-card {
   position: fixed;
-  top: 1.5rem;
-  right: 1.5rem;
-  z-index: 10;
-}
-.badge img {
-  filter: drop-shadow(0 0 5px #00ffff);
-}
-
-/* UI Card (Popup Panel) */
-#ui-card {
-  position: fixed;
-  top: 10%;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 480px;
-  background: rgba(0, 8, 20, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid #00ffff;
-  box-shadow: 0 0 20px #00ffff88;
-  padding: 1.5rem;
-  border-radius: 10px;
-  z-index: 20;
-  animation: fadeIn 0.4s ease-in-out;
-}
-.hidden {
-  display: none;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 30, 0.9);
+  color: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 16px;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 30px rgba(0, 255, 255, 0.2);
+  z-index: 999;
+  max-width: 400px;
+  animation: fadeIn 0.4s ease-out;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  border-bottom: 1px solid #00ffff55;
+floating-card::part(title) {
+  font-size: 1.5rem;
+  font-weight: bold;
   margin-bottom: 1rem;
 }
-#card-title {
-  font-size: 1.4rem;
-  color: #00ffff;
-  text-shadow: 0 0 5px #00ffff;
-}
-#close-btn {
-  background: none;
-  border: none;
-  color: #00ffff;
-  font-size: 1.4rem;
-  cursor: pointer;
-  transition: color 0.3s;
-}
-#close-btn:hover {
-  color: #ff0066;
+
+floating-card::part(content) {
+  font-size: 1rem;
+  line-height: 1.4;
 }
 
-/* Footer */
+/* ====== GitHub Badge ====== */
+.badge {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.badge img {
+  height: 30px;
+  filter: drop-shadow(0 0 4px cyan);
+}
+
+/* ====== Footer ====== */
 footer {
   position: fixed;
   bottom: 1rem;
-  width: 100%;
-  text-align: center;
+  right: 1rem;
+  color: #ccc;
   font-size: 0.9rem;
-  color: #888;
-  z-index: 5;
-  text-shadow: 0 0 5px #00ffff44;
+  z-index: 10;
+  background: rgba(10, 10, 15, 0.8);
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  backdrop-filter: blur(8px);
 }
 
-/* Animations */
+/* ====== Animations ====== */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translate(-50%, -10%); }
-  to { opacity: 1; transform: translate(-50%, 0); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, -60%);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+  }
 }
