@@ -1,4 +1,4 @@
-# .github/workflows/deploy.yml
+# File: .github/workflows/deploy.yml
 name: Deploy Space Portfolio
 
 on:
@@ -15,10 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Create vendor directory
-        run: mkdir -p js/vendor
+        run: mkdir -p js/vendor/fonts
 
       - name: Download Three.js core
         run: curl -o js/vendor/three.module.js https://unpkg.com/three@0.159.0/build/three.module.js
@@ -35,18 +35,16 @@ jobs:
       - name: Download WebFontLoader
         run: curl -o js/vendor/webfontloader.js https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js
 
-      - name: Download helvetiker_regular.typeface.json
-        run: |
-          mkdir -p js/vendor/fonts
-          curl -o js/vendor/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
+      - name: Download helvetiker font
+        run: curl -o js/vendor/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
 
-      - name: Setup Pages
-        uses: actions/configure-pages@v2
+      - name: Setup GitHub Pages
+        uses: actions/configure-pages@v3
 
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v1
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v2
         with:
           path: .
 
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v3
