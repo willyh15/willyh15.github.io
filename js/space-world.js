@@ -3,6 +3,8 @@ console.log('[BOOT] space-world.js loaded');
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
+const TextGeometry = THREE.TextGeometry;
+const FontLoader = THREE.FontLoader;
 
 try {
   if (typeof THREE === 'undefined') throw new Error('THREE is not defined');
@@ -10,9 +12,7 @@ try {
 
   if (typeof TextGeometry === 'undefined') throw new Error('TextGeometry is undefined');
   if (typeof FontLoader === 'undefined') throw new Error('FontLoader is undefined');
-
-  THREE.TextGeometry = TextGeometry;
-  THREE.FontLoader = FontLoader;
+  
   console.log('[THREE] TextGeometry and FontLoader assigned');
 } catch (e) {
   console.error('[IMPORT FAIL]', e);
