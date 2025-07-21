@@ -16,8 +16,8 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Create vendor directory
-        run: mkdir -p js/vendor js/vendor/fonts
+      - name: Create vendor directories
+        run: mkdir -p js/vendor static/fonts
 
       - name: Download Three.js core
         run: curl -o js/vendor/three.module.js https://unpkg.com/three@0.159.0/build/three.module.js
@@ -35,14 +35,13 @@ jobs:
         run: curl -o js/vendor/webfontloader.js https://cdnjs.cloudflare.com/ajax/libs/webfont/1.6.28/webfontloader.js
 
       - name: Download helvetiker font
-        run: curl -o js/vendor/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
+        run: curl -o static/fonts/helvetiker_regular.typeface.json https://unpkg.com/three@0.159.0/examples/fonts/helvetiker_regular.typeface.json
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
-
         with:
           path: .
 
