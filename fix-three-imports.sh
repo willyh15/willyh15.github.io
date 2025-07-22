@@ -1,15 +1,16 @@
 #!/bin/bash
 
-VENDOR_DIR="js/vendor"
+# Base path to your local three.module.js relative to JS files
+THREE_REL_PATH="./vendor/three.module.js"
 
-echo "Fixing 'three.core.js' references to 'three.module.js' in $VENDOR_DIR..."
+echo "Replacing bare 'three' imports with '$THREE_REL_PATH' in all .js files..."
 
-# Find all .js files in vendor folder
-find "$VENDOR_DIR" -type f -name "*.js" | while read -r file; do
-  if grep -q "three.core.js" "$file"; then
-    echo "Fixing $file"
-    # Use sed to replace 'three.core.js' with 'three.module.js' in-place (Linux version)
-    sed -i 's/three\.core\.js/three.module.js/g' "$file"
+# Find all .js files recursively
+find . -type f -name "*.js" | while read -r file; do
+  if grep -q "from ['\"]three['\"]" "$file"; then
+    echo "Fixing imports in $file"
+    # Replace import lines like: import ... from 'three';
+    sed -i "s/from ['\"]three['\"]/from '$THREE_REL_PATH'/g" "$file"
   fi
 done
 
