@@ -48,7 +48,7 @@ function init(canvas) {
 
   const fontLoader = new FontLoader();
   fontLoader.load(
-    './static/fonts/helvetiker_regular.typeface.json',
+    '../static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
 
