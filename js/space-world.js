@@ -1,9 +1,10 @@
 console.log('[BOOT] space-world.js loaded');
 
-import * as THREE from './vendor/three.module.js';
-import { OrbitControls } from './vendor/OrbitControls.js';
-import { FontLoader } from './vendor/FontLoader.js';
-import { TextGeometry } from './vendor/TextGeometry.js';
+// Use official CDN for Three.js and related modules
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.153.0/build/three.module.js';
+import { OrbitControls } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/controls/OrbitControls.js';
+import { FontLoader } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'https://cdn.jsdelivr.net/npm/three@0.153.0/examples/jsm/geometries/TextGeometry.js';
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
@@ -48,7 +49,7 @@ function init(canvas) {
 
   const fontLoader = new FontLoader();
   fontLoader.load(
-    '../static/fonts/helvetiker_regular.typeface.json',
+    'static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
 
