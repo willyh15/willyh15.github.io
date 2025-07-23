@@ -8,6 +8,8 @@ import { TextGeometry } from 'three/geometries/TextGeometry.js';
 let scene, camera, renderer, raycaster, mouse, controls;
 const planets = [];
 
+let hoveredPlanet = null;
+
 let isAnimatingCamera = false;
 let animationStartTime = 0;
 let animationDuration = 1500; // ms
@@ -66,12 +68,14 @@ function init(canvas) {
       console.log('[FONT] Loaded successfully');
 
       sections.forEach((label, i) => {
+        const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
         const planet = new THREE.Mesh(
           new THREE.SphereGeometry(0.8, 32, 32),
-          new THREE.MeshStandardMaterial({ color: 0x00ffff })
+          material
         );
         planet.position.set(...positions[i]);
         planet.name = label;
+        planet.userData = { baseColor: material.color.clone(), material }; // Store base color and material
         scene.add(planet);
         planets.push(planet);
 
@@ -102,6 +106,7 @@ function init(canvas) {
   );
 
   window.addEventListener('click', onClick, false);
+  window.addEventListener('mousemove', onMouseMove, false);
   window.addEventListener('resize', onResize);
 }
 
@@ -116,14 +121,55 @@ function onClick(event) {
   if (intersects.length > 0) {
     const planet = intersects[0].object;
     startCameraAnimation(planet.position);
-    
+
     // Show floating card as before
     const name = planet.name;
     const card = document.createElement('floating-card');
     card.setAttribute('title', name);
-    card.setAttribute('content', `This is the ${name} section. Add your content here.`);
+    card.setAttribute(
+      'content',
+      `This is the ${name} section. Add your content here.`
+    );
     document.body.appendChild(card);
   }
+}
+
+function onMouseMove(event) {
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(planets);
+
+  if (intersects.length > 0) {
+    const planet = intersects[0].object;
+    if (hoveredPlanet !== planet) {
+      if (hoveredPlanet) resetPlanetHover(hoveredPlanet);
+      applyPlanetHover(planet);
+      hoveredPlanet = planet;
+    }
+  } else {
+    if (hoveredPlanet) {
+      resetPlanetHover(hoveredPlanet);
+      hoveredPlanet = null;
+    }
+  }
+}
+
+function applyPlanetHover(planet) {
+  const mat = planet.userData.material;
+  // Scale up slightly
+  planet.scale.set(1.15, 1.15, 1.15);
+  // Emissive glow effect with a cyan tint
+  mat.emissive = new THREE.Color(0x00ffff);
+  mat.emissiveIntensity = 0.6;
+}
+
+function resetPlanetHover(planet) {
+  const mat = planet.userData.material;
+  planet.scale.set(1, 1, 1);
+  mat.emissive = new THREE.Color(0x000000);
+  mat.emissiveIntensity = 0;
 }
 
 function startCameraAnimation(targetPos) {
