@@ -86,19 +86,37 @@ function init(canvas) {
           font: font,
           size: 0.3,
           height: 0.05,
+          curveSegments: 12,
         });
 
         textGeo.computeBoundingBox();
         const centerOffset =
           -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
+        // Create text mesh with white fill
         const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+
+        // Create outline by cloning geometry and scaling slightly
+        const outlineGeo = textGeo.clone();
+        outlineGeo.scale(1.05, 1.05, 1.05);
+        const outlineMat = new THREE.MeshBasicMaterial({
+          color: 0x000000,
+          side: THREE.BackSide,
+        });
+
         const textMesh = new THREE.Mesh(textGeo, textMat);
+        const outlineMesh = new THREE.Mesh(outlineGeo, outlineMat);
+
+        // Position both meshes at same spot above planet
         textMesh.position.set(
           planet.position.x + centerOffset,
           planet.position.y + 1.2,
           planet.position.z
         );
+        outlineMesh.position.copy(textMesh.position);
+
+        // Add outline first, then text mesh for proper layering
+        scene.add(outlineMesh);
         scene.add(textMesh);
       });
 
