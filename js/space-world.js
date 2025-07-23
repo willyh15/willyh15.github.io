@@ -189,6 +189,11 @@ function startCameraAnimation(targetPos) {
 function animate() {
   requestAnimationFrame(animate);
 
+  // Rotate each planet slowly on its own Y axis
+  planets.forEach(planet => {
+    planet.rotation.y += 0.003;
+  });
+
   if (isAnimatingCamera) {
     const elapsed = performance.now() - animationStartTime;
     const t = Math.min(elapsed / animationDuration, 1);
