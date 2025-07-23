@@ -26,8 +26,21 @@ const basePositions = [
   [2, -2, 3],
 ];
 
-// For keyboard nav tracking:
-let focusedPlanetIndex = -1;
+// Define distinct colors for each planet for visual variety
+const planetColors = [
+  0x4db8ff, // bright cyan-blue
+  0xffb84d, // warm orange
+  0x99ff99, // soft green
+  0xff4d4d, // vivid red
+];
+
+// Orbit parameters for planets [orbitRadius, orbitSpeed]
+const planetOrbits = [
+  { radius: 5, speed: 0.0012, angle: 0 }, // Projects
+  { radius: 3.5, speed: 0.0018, angle: 0.5 }, // Skills
+  { radius: 6, speed: 0.0009, angle: 1.0 }, // About
+  { radius: 4, speed: 0.0015, angle: 1.5 }, // Contact
+];
 
 // Create and insert a loading spinner element into the DOM
 const loadingSpinner = document.createElement('div');
@@ -93,7 +106,7 @@ function init(canvas) {
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
 
-  const light = new THREE.PointLight(0xffffff, 1, 100);
+  const light = new THREE.PointLight(0xffffff, 1.2, 100);
   light.position.set(10, 10, 10);
   scene.add(light);
   scene.add(new THREE.AmbientLight(0x222222));
@@ -115,14 +128,31 @@ function init(canvas) {
       loadingSpinner.remove(); // Remove spinner on success
 
       sections.forEach((label, i) => {
-        const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
+        const material = new THREE.MeshStandardMaterial({
+          color: planetColors[i],
+          roughness: 0.4,
+          metalness: 0.2,
+          flatShading: false,
+          // Add subtle emissive for glow effect
+          emissive: new THREE.Color(planetColors[i]).multiplyScalar(0.2),
+          emissiveIntensity: 0.3,
+        });
+
         const planet = new THREE.Mesh(
           new THREE.SphereGeometry(0.8, 32, 32),
           material
         );
+        // Start position at adjusted position for initial placement
         planet.position.set(...adjustedPositions[i]);
         planet.name = label;
-        planet.userData = { baseColor: material.color.clone(), material };
+        planet.userData = {
+          baseColor: material.color.clone(),
+          material,
+          orbitRadius: planetOrbits[i].radius,
+          orbitSpeed: planetOrbits[i].speed,
+          orbitAngle: planetOrbits[i].angle,
+          basePosition: adjustedPositions[i].slice(),
+        };
         scene.add(planet);
         planets.push(planet);
 
@@ -199,76 +229,13 @@ function init(canvas) {
   window.addEventListener('click', onClick, false);
   window.addEventListener('mousemove', onMouseMove, false);
   window.addEventListener('resize', onResize);
-
-  // Keyboard navigation for desktop only
-  document.addEventListener('keydown', onKeyDown);
-}
-
-// Track floating card to avoid stacking from keyboard nav
-let currentFloatingCard = null;
-
-function onKeyDown(event) {
-  const isMobile = window.innerWidth < 600;
-  if (isMobile) return; // Disable keyboard nav on mobile
-
-  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
-    event.preventDefault();
-    focusNextPlanet();
-  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
-    event.preventDefault();
-    focusPrevPlanet();
-  }
-}
-
-function focusNextPlanet() {
-  if (planets.length === 0) return;
-
-  if (focusedPlanetIndex >= 0) resetPlanetHover(planets[focusedPlanetIndex]);
-
-  focusedPlanetIndex = (focusedPlanetIndex + 1) % planets.length;
-  const planet = planets[focusedPlanetIndex];
-
-  applyPlanetHover(planet);
-  startCameraAnimation(planet.position);
-
-  showOrUpdateFloatingCard(planet);
-}
-
-function focusPrevPlanet() {
-  if (planets.length === 0) return;
-
-  if (focusedPlanetIndex >= 0) resetPlanetHover(planets[focusedPlanetIndex]);
-
-  focusedPlanetIndex = (focusedPlanetIndex - 1 + planets.length) % planets.length;
-  const planet = planets[focusedPlanetIndex];
-
-  applyPlanetHover(planet);
-  startCameraAnimation(planet.position);
-
-  showOrUpdateFloatingCard(planet);
-}
-
-function showOrUpdateFloatingCard(planet) {
-  if (currentFloatingCard) {
-    currentFloatingCard.setAttribute('title', planet.name);
-    currentFloatingCard.setAttribute('content', `This is the ${planet.name} section. Add your content here.`);
-  } else {
-    const card = document.createElement('floating-card');
-    card.setAttribute('title', planet.name);
-    card.setAttribute('content', `This is the ${planet.name} section. Add your content here.`);
-    document.body.appendChild(card);
-    currentFloatingCard = card;
-
-    card.addEventListener('click', () => {
-      currentFloatingCard = null;
-    });
-  }
 }
 
 function createStarfield() {
   const starCount = 1000;
   const geometry = new THREE.BufferGeometry();
   const positions = [];
+  const opacities = [];
 
   for (let i = 0; i < starCount; i++) {
     positions.push(
@@ -276,6 +243,7 @@ function createStarfield() {
       (Math.random() - 0.5) * 200,
       (Math.random() - 0.5) * 200
     );
+    opacities.push(Math.random()); // random opacity for twinkle effect
   }
 
   geometry.setAttribute(
@@ -283,12 +251,18 @@ function createStarfield() {
     new THREE.Float32BufferAttribute(positions, 3)
   );
 
+  geometry.setAttribute(
+    'opacity',
+    new THREE.Float32BufferAttribute(opacities, 1)
+  );
+
   const material = new THREE.PointsMaterial({
     color: 0xffffff,
     size: 0.7,
     sizeAttenuation: true,
-    opacity: 0.7,
     transparent: true,
+    vertexColors: false,
+    opacity: 0.7,
   });
 
   starfield = new THREE.Points(geometry, material);
@@ -371,8 +345,31 @@ function startCameraAnimation(targetPos) {
 function animate() {
   requestAnimationFrame(animate);
 
-  planets.forEach(planet => {
-    planet.rotation.y += 0.003;
+  // Animate starfield twinkle by varying opacity attribute
+  if (starfield) {
+    const opacities = starfield.geometry.attributes.opacity.array;
+    for (let i = 0; i < opacities.length; i++) {
+      opacities[i] += (Math.random() - 0.5) * 0.02; // small random delta
+      opacities[i] = THREE.MathUtils.clamp(opacities[i], 0.3, 1);
+    }
+    starfield.geometry.attributes.opacity.needsUpdate = true;
+  }
+
+  // Update planets rotation and orbit
+  const deltaTime = 0.016; // approx 60fps, could use clock for accuracy
+  planets.forEach((planet, idx) => {
+    // Rotate on own axis
+    planet.rotation.y += 0.005;
+
+    // Orbit movement: update angle then calculate position
+    planet.userData.orbitAngle += planet.userData.orbitSpeed;
+    const angle = planet.userData.orbitAngle;
+    const radius = planet.userData.orbitRadius;
+    // Keep original Y from base position for vertical offset
+    const baseY = planet.userData.basePosition[1];
+    planet.position.x = Math.cos(angle) * radius;
+    planet.position.z = Math.sin(angle) * radius;
+    planet.position.y = baseY; // maintain Y axis height
   });
 
   if (isAnimatingCamera) {
@@ -409,6 +406,10 @@ function onResize() {
       basePos[1] * scale,
       basePos[2] * scale
     );
+    // Also update orbit radius for correct orbit on resize
+    planet.userData.orbitRadius = basePositions[i][0] * scale;
+    // Preserve original y height scaled
+    planet.userData.basePosition[1] = basePositions[i][1] * scale;
   });
 
   renderer.setSize(window.innerWidth, window.innerHeight);
