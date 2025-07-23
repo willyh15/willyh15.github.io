@@ -5,8 +5,16 @@ import { OrbitControls } from 'three/controls/OrbitControls.js';
 import { FontLoader } from 'three/loaders/FontLoader.js';
 import { TextGeometry } from 'three/geometries/TextGeometry.js';
 
-let scene, camera, renderer, raycaster, mouse;
+let scene, camera, renderer, raycaster, mouse, controls;
 const planets = [];
+
+let isAnimatingCamera = false;
+let animationStartTime = 0;
+let animationDuration = 1500; // ms
+let cameraStartPos = new THREE.Vector3();
+let cameraEndPos = new THREE.Vector3();
+let targetStartPos = new THREE.Vector3();
+let targetEndPos = new THREE.Vector3();
 
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
@@ -18,7 +26,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function init(canvas) {
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera = new THREE.PerspectiveCamera(
+    75,
+    window.innerWidth / window.innerHeight,
+    0.1,
+    1000
+  );
   camera.position.set(0, 2, 8);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
@@ -28,7 +41,7 @@ function init(canvas) {
   raycaster = new THREE.Raycaster();
   mouse = new THREE.Vector2();
 
-  const controls = new OrbitControls(camera, renderer.domElement);
+  controls = new OrbitControls(camera, renderer.domElement);
   controls.enableZoom = true;
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
@@ -69,11 +82,16 @@ function init(canvas) {
         });
 
         textGeo.computeBoundingBox();
-        const centerOffset = -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+        const centerOffset =
+          -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
         const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const textMesh = new THREE.Mesh(textGeo, textMat);
-        textMesh.position.set(planet.position.x + centerOffset, planet.position.y + 1.2, planet.position.z);
+        textMesh.position.set(
+          planet.position.x + centerOffset,
+          planet.position.y + 1.2,
+          planet.position.z
+        );
         scene.add(textMesh);
       });
 
@@ -88,13 +106,19 @@ function init(canvas) {
 }
 
 function onClick(event) {
+  if (isAnimatingCamera) return; // Ignore clicks during animation
+
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
   raycaster.setFromCamera(mouse, camera);
   const intersects = raycaster.intersectObjects(planets);
   if (intersects.length > 0) {
-    const name = intersects[0].object.name;
+    const planet = intersects[0].object;
+    startCameraAnimation(planet.position);
+    
+    // Show floating card as before
+    const name = planet.name;
     const card = document.createElement('floating-card');
     card.setAttribute('title', name);
     card.setAttribute('content', `This is the ${name} section. Add your content here.`);
@@ -102,13 +126,46 @@ function onClick(event) {
   }
 }
 
-function onResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
-  camera.updateProjectionMatrix();
-  renderer.setSize(window.innerWidth, window.innerHeight);
+function startCameraAnimation(targetPos) {
+  isAnimatingCamera = true;
+  animationStartTime = performance.now();
+
+  cameraStartPos.copy(camera.position);
+  cameraEndPos.copy(targetPos).add(new THREE.Vector3(0, 1.5, 3)); // Offset to stand back & above
+
+  targetStartPos.copy(controls.target);
+  targetEndPos.copy(targetPos);
+
+  controls.autoRotate = false;
+  controls.enabled = false;
 }
 
 function animate() {
   requestAnimationFrame(animate);
+
+  if (isAnimatingCamera) {
+    const elapsed = performance.now() - animationStartTime;
+    const t = Math.min(elapsed / animationDuration, 1);
+
+    // Smoothstep easing
+    const smoothT = t * t * (3 - 2 * t);
+
+    camera.position.lerpVectors(cameraStartPos, cameraEndPos, smoothT);
+    controls.target.lerpVectors(targetStartPos, targetEndPos, smoothT);
+    controls.update();
+
+    if (t === 1) {
+      isAnimatingCamera = false;
+      controls.enabled = true;
+      controls.autoRotate = true;
+    }
+  }
+
   renderer.render(scene, camera);
+}
+
+function onResize() {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
 }
