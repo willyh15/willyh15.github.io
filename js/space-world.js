@@ -26,6 +26,9 @@ const basePositions = [
   [2, -2, 3],
 ];
 
+// For keyboard nav tracking:
+let focusedPlanetIndex = -1;
+
 // Create and insert a loading spinner element into the DOM
 const loadingSpinner = document.createElement('div');
 loadingSpinner.id = 'loading-spinner';
@@ -196,6 +199,70 @@ function init(canvas) {
   window.addEventListener('click', onClick, false);
   window.addEventListener('mousemove', onMouseMove, false);
   window.addEventListener('resize', onResize);
+
+  // Keyboard navigation for desktop only
+  document.addEventListener('keydown', onKeyDown);
+}
+
+// Track floating card to avoid stacking from keyboard nav
+let currentFloatingCard = null;
+
+function onKeyDown(event) {
+  const isMobile = window.innerWidth < 600;
+  if (isMobile) return; // Disable keyboard nav on mobile
+
+  if (event.key === 'ArrowRight' || event.key === 'ArrowDown') {
+    event.preventDefault();
+    focusNextPlanet();
+  } else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') {
+    event.preventDefault();
+    focusPrevPlanet();
+  }
+}
+
+function focusNextPlanet() {
+  if (planets.length === 0) return;
+
+  if (focusedPlanetIndex >= 0) resetPlanetHover(planets[focusedPlanetIndex]);
+
+  focusedPlanetIndex = (focusedPlanetIndex + 1) % planets.length;
+  const planet = planets[focusedPlanetIndex];
+
+  applyPlanetHover(planet);
+  startCameraAnimation(planet.position);
+
+  showOrUpdateFloatingCard(planet);
+}
+
+function focusPrevPlanet() {
+  if (planets.length === 0) return;
+
+  if (focusedPlanetIndex >= 0) resetPlanetHover(planets[focusedPlanetIndex]);
+
+  focusedPlanetIndex = (focusedPlanetIndex - 1 + planets.length) % planets.length;
+  const planet = planets[focusedPlanetIndex];
+
+  applyPlanetHover(planet);
+  startCameraAnimation(planet.position);
+
+  showOrUpdateFloatingCard(planet);
+}
+
+function showOrUpdateFloatingCard(planet) {
+  if (currentFloatingCard) {
+    currentFloatingCard.setAttribute('title', planet.name);
+    currentFloatingCard.setAttribute('content', `This is the ${planet.name} section. Add your content here.`);
+  } else {
+    const card = document.createElement('floating-card');
+    card.setAttribute('title', planet.name);
+    card.setAttribute('content', `This is the ${planet.name} section. Add your content here.`);
+    document.body.appendChild(card);
+    currentFloatingCard = card;
+
+    card.addEventListener('click', () => {
+      currentFloatingCard = null;
+    });
+  }
 }
 
 function createStarfield() {
