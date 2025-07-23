@@ -26,9 +26,39 @@ const basePositions = [
   [2, -2, 3],
 ];
 
+// Create and insert a loading spinner element into the DOM
+const loadingSpinner = document.createElement('div');
+loadingSpinner.id = 'loading-spinner';
+loadingSpinner.style.position = 'fixed';
+loadingSpinner.style.top = '50%';
+loadingSpinner.style.left = '50%';
+loadingSpinner.style.transform = 'translate(-50%, -50%)';
+loadingSpinner.style.border = '8px solid #f3f3f3';
+loadingSpinner.style.borderTop = '8px solid #00ffff';
+loadingSpinner.style.borderRadius = '50%';
+loadingSpinner.style.width = '60px';
+loadingSpinner.style.height = '60px';
+loadingSpinner.style.animation = 'spin 1s linear infinite';
+loadingSpinner.style.zIndex = '1000';
+document.body.appendChild(loadingSpinner);
+
+// Add keyframes style for spinner animation
+const style = document.createElement('style');
+style.textContent = `
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+`;
+document.head.appendChild(style);
+
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
-  if (!canvas) return console.error('[CANVAS] Missing #space-scene');
+  if (!canvas) {
+    console.error('[CANVAS] Missing #space-scene');
+    loadingSpinner.remove();
+    return;
+  }
 
   init(canvas);
   animate();
@@ -37,7 +67,6 @@ document.addEventListener('DOMContentLoaded', () => {
 function init(canvas) {
   scene = new THREE.Scene();
 
-  // Adjust FOV for smaller screens
   const isMobile = window.innerWidth < 600;
   const fov = isMobile ? 90 : 75;
 
@@ -69,8 +98,6 @@ function init(canvas) {
   createStarfield();
 
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
-
-  // Adjust planet positions slightly on small screens
   const adjustedPositions = basePositions.map(pos =>
     isMobile
       ? [pos[0] * 0.7, pos[1] * 0.7, pos[2] * 0.7]
@@ -82,6 +109,7 @@ function init(canvas) {
     'static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
+      loadingSpinner.remove(); // Remove spinner on success
 
       sections.forEach((label, i) => {
         const material = new THREE.MeshStandardMaterial({ color: 0x00ffff });
@@ -132,7 +160,37 @@ function init(canvas) {
       console.log('[SCENE] Loaded with', scene.children.length, 'children');
     },
     undefined,
-    err => console.error('[FONT ERROR]', err)
+    err => {
+      console.error('[FONT ERROR]', err);
+      loadingSpinner.remove(); // Remove spinner on error
+
+      // Create fallback label with basic font
+      const fallbackLabel = document.createElement('div');
+      fallbackLabel.textContent = 'Font load failed. Using fallback font.';
+      fallbackLabel.style.position = 'fixed';
+      fallbackLabel.style.top = '10px';
+      fallbackLabel.style.left = '50%';
+      fallbackLabel.style.transform = 'translateX(-50%)';
+      fallbackLabel.style.background = 'rgba(255,0,0,0.8)';
+      fallbackLabel.style.color = '#fff';
+      fallbackLabel.style.padding = '0.5rem 1rem';
+      fallbackLabel.style.zIndex = '1000';
+      document.body.appendChild(fallbackLabel);
+
+      // Fallback: add simple planets without text geometry
+      const fallbackSections = ['Projects', 'Skills', 'About', 'Contact'];
+      fallbackSections.forEach((label, i) => {
+        const mat = new THREE.MeshStandardMaterial({ color: 0x00ffff });
+        const fallbackPlanet = new THREE.Mesh(
+          new THREE.SphereGeometry(0.8, 32, 32),
+          mat
+        );
+        fallbackPlanet.position.set(...adjustedPositions[i]);
+        fallbackPlanet.name = label;
+        scene.add(fallbackPlanet);
+        planets.push(fallbackPlanet);
+      });
+    }
   );
 
   window.addEventListener('click', onClick, false);
@@ -271,13 +329,11 @@ function animate() {
 }
 
 function onResize() {
-  // Adjust camera FOV and reposition planets on resize
   const isMobile = window.innerWidth < 600;
 
   camera.fov = isMobile ? 90 : 75;
   camera.updateProjectionMatrix();
 
-  // Adjust planet positions dynamically on resize
   planets.forEach((planet, i) => {
     const basePos = basePositions[i];
     const scale = isMobile ? 0.7 : 1;
