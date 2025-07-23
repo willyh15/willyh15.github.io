@@ -1,9 +1,9 @@
 console.log('[BOOT] space-world.js loaded');
 
-import * as THREE from 'https://cdn.skypack.dev/three@0.153.0';
-import { OrbitControls } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/controls/OrbitControls.js';
-import { FontLoader } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'https://cdn.skypack.dev/three@0.153.0/examples/jsm/geometries/TextGeometry.js';
+import * as THREE from 'three';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
