@@ -7,6 +7,7 @@ import { TextGeometry } from 'three/geometries/TextGeometry.js';
 
 let scene, camera, renderer, raycaster, mouse, controls;
 const planets = [];
+let starfield;
 
 let hoveredPlanet = null;
 
@@ -53,6 +54,8 @@ function init(canvas) {
   scene.add(light);
   scene.add(new THREE.AmbientLight(0x222222));
 
+  createStarfield();
+
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
   const positions = [
     [-5, 1, -2],
@@ -75,7 +78,7 @@ function init(canvas) {
         );
         planet.position.set(...positions[i]);
         planet.name = label;
-        planet.userData = { baseColor: material.color.clone(), material }; // Store base color and material
+        planet.userData = { baseColor: material.color.clone(), material };
         scene.add(planet);
         planets.push(planet);
 
@@ -110,8 +113,38 @@ function init(canvas) {
   window.addEventListener('resize', onResize);
 }
 
+function createStarfield() {
+  const starCount = 1000;
+  const geometry = new THREE.BufferGeometry();
+  const positions = [];
+
+  for (let i = 0; i < starCount; i++) {
+    positions.push(
+      (Math.random() - 0.5) * 200, // x
+      (Math.random() - 0.5) * 200, // y
+      (Math.random() - 0.5) * 200  // z
+    );
+  }
+
+  geometry.setAttribute(
+    'position',
+    new THREE.Float32BufferAttribute(positions, 3)
+  );
+
+  const material = new THREE.PointsMaterial({
+    color: 0xffffff,
+    size: 0.7,
+    sizeAttenuation: true,
+    opacity: 0.7,
+    transparent: true
+  });
+
+  starfield = new THREE.Points(geometry, material);
+  scene.add(starfield);
+}
+
 function onClick(event) {
-  if (isAnimatingCamera) return; // Ignore clicks during animation
+  if (isAnimatingCamera) return;
 
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -122,7 +155,6 @@ function onClick(event) {
     const planet = intersects[0].object;
     startCameraAnimation(planet.position);
 
-    // Show floating card as before
     const name = planet.name;
     const card = document.createElement('floating-card');
     card.setAttribute('title', name);
@@ -158,9 +190,7 @@ function onMouseMove(event) {
 
 function applyPlanetHover(planet) {
   const mat = planet.userData.material;
-  // Scale up slightly
   planet.scale.set(1.15, 1.15, 1.15);
-  // Emissive glow effect with a cyan tint
   mat.emissive = new THREE.Color(0x00ffff);
   mat.emissiveIntensity = 0.6;
 }
@@ -177,7 +207,7 @@ function startCameraAnimation(targetPos) {
   animationStartTime = performance.now();
 
   cameraStartPos.copy(camera.position);
-  cameraEndPos.copy(targetPos).add(new THREE.Vector3(0, 1.5, 3)); // Offset to stand back & above
+  cameraEndPos.copy(targetPos).add(new THREE.Vector3(0, 1.5, 3));
 
   targetStartPos.copy(controls.target);
   targetEndPos.copy(targetPos);
@@ -189,7 +219,6 @@ function startCameraAnimation(targetPos) {
 function animate() {
   requestAnimationFrame(animate);
 
-  // Rotate each planet slowly on its own Y axis
   planets.forEach(planet => {
     planet.rotation.y += 0.003;
   });
@@ -198,7 +227,6 @@ function animate() {
     const elapsed = performance.now() - animationStartTime;
     const t = Math.min(elapsed / animationDuration, 1);
 
-    // Smoothstep easing
     const smoothT = t * t * (3 - 2 * t);
 
     camera.position.lerpVectors(cameraStartPos, cameraEndPos, smoothT);
