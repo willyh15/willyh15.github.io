@@ -19,6 +19,13 @@ let cameraEndPos = new THREE.Vector3();
 let targetStartPos = new THREE.Vector3();
 let targetEndPos = new THREE.Vector3();
 
+const basePositions = [
+  [-5, 1, -2],
+  [0, -1, -5],
+  [4, 2, 0],
+  [2, -2, 3],
+];
+
 document.addEventListener('DOMContentLoaded', () => {
   const canvas = document.getElementById('space-scene');
   if (!canvas) return console.error('[CANVAS] Missing #space-scene');
@@ -29,13 +36,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function init(canvas) {
   scene = new THREE.Scene();
+
+  // Adjust FOV for smaller screens
+  const isMobile = window.innerWidth < 600;
+  const fov = isMobile ? 90 : 75;
+
   camera = new THREE.PerspectiveCamera(
-    75,
+    fov,
     window.innerWidth / window.innerHeight,
     0.1,
     1000
   );
-  camera.position.set(0, 2, 8);
+  camera.position.set(0, 2, isMobile ? 12 : 8);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -57,12 +69,13 @@ function init(canvas) {
   createStarfield();
 
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
-  const positions = [
-    [-5, 1, -2],
-    [0, -1, -5],
-    [4, 2, 0],
-    [2, -2, 3],
-  ];
+
+  // Adjust planet positions slightly on small screens
+  const adjustedPositions = basePositions.map(pos =>
+    isMobile
+      ? [pos[0] * 0.7, pos[1] * 0.7, pos[2] * 0.7]
+      : pos
+  );
 
   const fontLoader = new FontLoader();
   fontLoader.load(
@@ -76,7 +89,7 @@ function init(canvas) {
           new THREE.SphereGeometry(0.8, 32, 32),
           material
         );
-        planet.position.set(...positions[i]);
+        planet.position.set(...adjustedPositions[i]);
         planet.name = label;
         planet.userData = { baseColor: material.color.clone(), material };
         scene.add(planet);
@@ -93,10 +106,8 @@ function init(canvas) {
         const centerOffset =
           -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
-        // Create text mesh with white fill
         const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
 
-        // Create outline by cloning geometry and scaling slightly
         const outlineGeo = textGeo.clone();
         outlineGeo.scale(1.05, 1.05, 1.05);
         const outlineMat = new THREE.MeshBasicMaterial({
@@ -107,7 +118,6 @@ function init(canvas) {
         const textMesh = new THREE.Mesh(textGeo, textMat);
         const outlineMesh = new THREE.Mesh(outlineGeo, outlineMat);
 
-        // Position both meshes at same spot above planet
         textMesh.position.set(
           planet.position.x + centerOffset,
           planet.position.y + 1.2,
@@ -115,7 +125,6 @@ function init(canvas) {
         );
         outlineMesh.position.copy(textMesh.position);
 
-        // Add outline first, then text mesh for proper layering
         scene.add(outlineMesh);
         scene.add(textMesh);
       });
@@ -138,9 +147,9 @@ function createStarfield() {
 
   for (let i = 0; i < starCount; i++) {
     positions.push(
-      (Math.random() - 0.5) * 200, // x
-      (Math.random() - 0.5) * 200, // y
-      (Math.random() - 0.5) * 200  // z
+      (Math.random() - 0.5) * 200,
+      (Math.random() - 0.5) * 200,
+      (Math.random() - 0.5) * 200
     );
   }
 
@@ -154,7 +163,7 @@ function createStarfield() {
     size: 0.7,
     sizeAttenuation: true,
     opacity: 0.7,
-    transparent: true
+    transparent: true,
   });
 
   starfield = new THREE.Points(geometry, material);
@@ -262,7 +271,22 @@ function animate() {
 }
 
 function onResize() {
-  camera.aspect = window.innerWidth / window.innerHeight;
+  // Adjust camera FOV and reposition planets on resize
+  const isMobile = window.innerWidth < 600;
+
+  camera.fov = isMobile ? 90 : 75;
   camera.updateProjectionMatrix();
+
+  // Adjust planet positions dynamically on resize
+  planets.forEach((planet, i) => {
+    const basePos = basePositions[i];
+    const scale = isMobile ? 0.7 : 1;
+    planet.position.set(
+      basePos[0] * scale,
+      basePos[1] * scale,
+      basePos[2] * scale
+    );
+  });
+
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
