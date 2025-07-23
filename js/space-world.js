@@ -1,9 +1,9 @@
 console.log('[BOOT] space-world.js loaded');
 
 import * as THREE from 'three';
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import { OrbitControls } from 'three/controls/OrbitControls.js';
+import { FontLoader } from 'three/loaders/FontLoader.js';
+import { TextGeometry } from 'three/geometries/TextGeometry.js';
 
 let scene, camera, renderer, raycaster, mouse;
 const planets = [];
