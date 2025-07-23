@@ -26,7 +26,7 @@ const basePositions = [
   [2, -2, 3],
 ];
 
-// Define distinct colors for each planet for visual variety
+// Define distinct colors for each planet
 const planetColors = [
   0x4db8ff, // bright cyan-blue
   0xffb84d, // warm orange
@@ -42,7 +42,7 @@ const planetOrbits = [
   { radius: 4, speed: 0.0015, angle: 1.5 }, // Contact
 ];
 
-// Create and insert a loading spinner element into the DOM
+// Loading spinner element
 const loadingSpinner = document.createElement('div');
 loadingSpinner.id = 'loading-spinner';
 loadingSpinner.style.position = 'fixed';
@@ -58,7 +58,6 @@ loadingSpinner.style.animation = 'spin 1s linear infinite';
 loadingSpinner.style.zIndex = '1000';
 document.body.appendChild(loadingSpinner);
 
-// Add keyframes style for spinner animation
 const style = document.createElement('style');
 style.textContent = `
 @keyframes spin {
@@ -75,7 +74,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingSpinner.remove();
     return;
   }
-
   init(canvas);
   animate();
 });
@@ -106,7 +104,7 @@ function init(canvas) {
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
 
-  const light = new THREE.PointLight(0xffffff, 1.2, 100);
+  const light = new THREE.PointLight(0xffffff, 1.5, 100);
   light.position.set(10, 10, 10);
   scene.add(light);
   scene.add(new THREE.AmbientLight(0x222222));
@@ -115,9 +113,7 @@ function init(canvas) {
 
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
   const adjustedPositions = basePositions.map(pos =>
-    isMobile
-      ? [pos[0] * 0.7, pos[1] * 0.7, pos[2] * 0.7]
-      : pos
+    isMobile ? [pos[0] * 0.7, pos[1] * 0.7, pos[2] * 0.7] : pos
   );
 
   const fontLoader = new FontLoader();
@@ -125,50 +121,53 @@ function init(canvas) {
     'static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
-      loadingSpinner.remove(); // Remove spinner on success
+      loadingSpinner.remove();
 
       sections.forEach((label, i) => {
         const material = new THREE.MeshStandardMaterial({
           color: planetColors[i],
           roughness: 0.4,
-          metalness: 0.2,
+          metalness: 0.4,
           flatShading: false,
-          // Add subtle emissive for glow effect
-          emissive: new THREE.Color(planetColors[i]).multiplyScalar(0.2),
-          emissiveIntensity: 0.3,
+          emissive: new THREE.Color(planetColors[i]).multiplyScalar(0.3),
+          emissiveIntensity: 0.4,
         });
 
         const planet = new THREE.Mesh(
           new THREE.SphereGeometry(0.8, 32, 32),
           material
         );
-        // Start position at adjusted position for initial placement
+
+        // Start planet position: will be overridden by orbit later
         planet.position.set(...adjustedPositions[i]);
         planet.name = label;
+
+        // Store userData for orbiting
         planet.userData = {
           baseColor: material.color.clone(),
           material,
-          orbitRadius: planetOrbits[i].radius,
+          orbitRadius: planetOrbits[i].radius * (isMobile ? 0.7 : 1),
           orbitSpeed: planetOrbits[i].speed,
           orbitAngle: planetOrbits[i].angle,
           basePosition: adjustedPositions[i].slice(),
         };
+
         scene.add(planet);
         planets.push(planet);
 
+        // Create label text geometry with outline
         const textGeo = new TextGeometry(label, {
-          font: font,
+          font,
           size: 0.3,
           height: 0.05,
           curveSegments: 12,
         });
-
         textGeo.computeBoundingBox();
+
         const centerOffset =
           -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
         const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-
         const outlineGeo = textGeo.clone();
         outlineGeo.scale(1.05, 1.05, 1.05);
         const outlineMat = new THREE.MeshBasicMaterial({
@@ -179,6 +178,7 @@ function init(canvas) {
         const textMesh = new THREE.Mesh(textGeo, textMat);
         const outlineMesh = new THREE.Mesh(outlineGeo, outlineMat);
 
+        // Position labels relative to planet (will update in animate)
         textMesh.position.set(
           planet.position.x + centerOffset,
           planet.position.y + 1.2,
@@ -188,6 +188,10 @@ function init(canvas) {
 
         scene.add(outlineMesh);
         scene.add(textMesh);
+
+        // Store label meshes for updating position on orbit
+        planet.userData.textMesh = textMesh;
+        planet.userData.outlineMesh = outlineMesh;
       });
 
       console.log('[SCENE] Loaded with', scene.children.length, 'children');
@@ -195,9 +199,8 @@ function init(canvas) {
     undefined,
     err => {
       console.error('[FONT ERROR]', err);
-      loadingSpinner.remove(); // Remove spinner on error
+      loadingSpinner.remove();
 
-      // Create fallback label with basic font
       const fallbackLabel = document.createElement('div');
       fallbackLabel.textContent = 'Font load failed. Using fallback font.';
       fallbackLabel.style.position = 'fixed';
@@ -210,7 +213,6 @@ function init(canvas) {
       fallbackLabel.style.zIndex = '1000';
       document.body.appendChild(fallbackLabel);
 
-      // Fallback: add simple planets without text geometry
       const fallbackSections = ['Projects', 'Skills', 'About', 'Contact'];
       fallbackSections.forEach((label, i) => {
         const mat = new THREE.MeshStandardMaterial({ color: 0x00ffff });
@@ -243,7 +245,7 @@ function createStarfield() {
       (Math.random() - 0.5) * 200,
       (Math.random() - 0.5) * 200
     );
-    opacities.push(Math.random()); // random opacity for twinkle effect
+    opacities.push(Math.random());
   }
 
   geometry.setAttribute(
@@ -349,15 +351,14 @@ function animate() {
   if (starfield) {
     const opacities = starfield.geometry.attributes.opacity.array;
     for (let i = 0; i < opacities.length; i++) {
-      opacities[i] += (Math.random() - 0.5) * 0.02; // small random delta
+      opacities[i] += (Math.random() - 0.5) * 0.02;
       opacities[i] = THREE.MathUtils.clamp(opacities[i], 0.3, 1);
     }
     starfield.geometry.attributes.opacity.needsUpdate = true;
   }
 
   // Update planets rotation and orbit
-  const deltaTime = 0.016; // approx 60fps, could use clock for accuracy
-  planets.forEach((planet, idx) => {
+  planets.forEach(planet => {
     // Rotate on own axis
     planet.rotation.y += 0.005;
 
@@ -365,11 +366,25 @@ function animate() {
     planet.userData.orbitAngle += planet.userData.orbitSpeed;
     const angle = planet.userData.orbitAngle;
     const radius = planet.userData.orbitRadius;
-    // Keep original Y from base position for vertical offset
     const baseY = planet.userData.basePosition[1];
     planet.position.x = Math.cos(angle) * radius;
     planet.position.z = Math.sin(angle) * radius;
-    planet.position.y = baseY; // maintain Y axis height
+    planet.position.y = baseY;
+
+    // Update label positions relative to planet
+    if (planet.userData.textMesh && planet.userData.outlineMesh) {
+      const textGeo = planet.userData.textMesh.geometry;
+      textGeo.computeBoundingBox();
+      const centerOffset =
+        -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+
+      planet.userData.textMesh.position.set(
+        planet.position.x + centerOffset,
+        planet.position.y + 1.2,
+        planet.position.z
+      );
+      planet.userData.outlineMesh.position.copy(planet.userData.textMesh.position);
+    }
   });
 
   if (isAnimatingCamera) {
@@ -398,18 +413,13 @@ function onResize() {
   camera.fov = isMobile ? 90 : 75;
   camera.updateProjectionMatrix();
 
+  // Only update orbit radius and base Y, do NOT reset position x,z
   planets.forEach((planet, i) => {
     const basePos = basePositions[i];
     const scale = isMobile ? 0.7 : 1;
-    planet.position.set(
-      basePos[0] * scale,
-      basePos[1] * scale,
-      basePos[2] * scale
-    );
-    // Also update orbit radius for correct orbit on resize
-    planet.userData.orbitRadius = basePositions[i][0] * scale;
-    // Preserve original y height scaled
-    planet.userData.basePosition[1] = basePositions[i][1] * scale;
+
+    planet.userData.orbitRadius = Math.abs(basePos[0]) * scale; // radius always positive
+    planet.userData.basePosition[1] = basePos[1] * scale;
   });
 
   renderer.setSize(window.innerWidth, window.innerHeight);
