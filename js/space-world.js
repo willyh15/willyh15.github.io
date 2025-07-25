@@ -7,7 +7,9 @@ import { TextGeometry } from 'three/geometries/TextGeometry.js';
 
 let scene, camera, renderer, raycaster, mouse, controls;
 const planets = [];
+const planetGroups = [];
 let starfield;
+let sun;
 
 let hoveredPlanet = null;
 
@@ -19,30 +21,25 @@ let cameraEndPos = new THREE.Vector3();
 let targetStartPos = new THREE.Vector3();
 let targetEndPos = new THREE.Vector3();
 
-const basePositions = [
-  [-5, 1, -2],
-  [0, -1, -5],
-  [4, 2, 0],
-  [2, -2, 3],
-];
+const baseOrbitRadii = [3, 5, 7, 9]; // spaced orbits for planets
 
-// Define distinct colors for each planet
+// Planet color palette (more natural shades)
 const planetColors = [
   0x4db8ff, // bright cyan-blue
   0xffb84d, // warm orange
-  0x99ff99, // soft green
-  0xff4d4d, // vivid red
+  0x99cc66, // soft green
+  0xff6666, // vivid red
 ];
 
-// Orbit parameters for planets [orbitRadius, orbitSpeed]
+// Orbit speeds, varying a bit for realism
 const planetOrbits = [
-  { radius: 5, speed: 0.0012, angle: 0 }, // Projects
-  { radius: 3.5, speed: 0.0018, angle: 0.5 }, // Skills
-  { radius: 6, speed: 0.0009, angle: 1.0 }, // About
-  { radius: 4, speed: 0.0015, angle: 1.5 }, // Contact
+  { speed: 0.0012, angle: 0 },
+  { speed: 0.0010, angle: 1.5 },
+  { speed: 0.0008, angle: 3.0 },
+  { speed: 0.0015, angle: 4.5 },
 ];
 
-// Loading spinner element
+// Create and insert a loading spinner element into the DOM
 const loadingSpinner = document.createElement('div');
 loadingSpinner.id = 'loading-spinner';
 loadingSpinner.style.position = 'fixed';
@@ -58,6 +55,7 @@ loadingSpinner.style.animation = 'spin 1s linear infinite';
 loadingSpinner.style.zIndex = '1000';
 document.body.appendChild(loadingSpinner);
 
+// Add keyframes style for spinner animation
 const style = document.createElement('style');
 style.textContent = `
 @keyframes spin {
@@ -74,6 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadingSpinner.remove();
     return;
   }
+
   init(canvas);
   animate();
 });
@@ -90,7 +89,7 @@ function init(canvas) {
     0.1,
     1000
   );
-  camera.position.set(0, 2, isMobile ? 12 : 8);
+  camera.position.set(0, 2, isMobile ? 14 : 10);
 
   renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true });
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -104,69 +103,84 @@ function init(canvas) {
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.5;
 
-  const light = new THREE.PointLight(0xffffff, 1.5, 100);
-  light.position.set(10, 10, 10);
+  // Lights: point light (sun-like) + ambient
+  const light = new THREE.PointLight(0xffffff, 1.4, 100);
+  light.position.set(0, 0, 0);
+  light.castShadow = true;
   scene.add(light);
   scene.add(new THREE.AmbientLight(0x222222));
 
   createStarfield();
+  createSun();
 
   const sections = ['Projects', 'Skills', 'About', 'Contact'];
-  const adjustedPositions = basePositions.map(pos =>
-    isMobile ? [pos[0] * 0.7, pos[1] * 0.7, pos[2] * 0.7] : pos
-  );
 
   const fontLoader = new FontLoader();
   fontLoader.load(
     'static/fonts/helvetiker_regular.typeface.json',
     font => {
       console.log('[FONT] Loaded successfully');
-      loadingSpinner.remove();
+      loadingSpinner.remove(); // Remove spinner on success
 
       sections.forEach((label, i) => {
-        const material = new THREE.MeshStandardMaterial({
-          color: planetColors[i],
-          roughness: 0.4,
-          metalness: 0.4,
-          flatShading: false,
-          emissive: new THREE.Color(planetColors[i]).multiplyScalar(0.3),
-          emissiveIntensity: 0.4,
-        });
+        // Create group to hold planet + text + orbit ring
+        const group = new THREE.Group();
+        scene.add(group);
+        planetGroups.push(group);
 
-        const planet = new THREE.Mesh(
-          new THREE.SphereGeometry(0.8, 32, 32),
-          material
+        // Planet material with bump map for surface depth
+        const textureLoader = new THREE.TextureLoader();
+
+        // Using simple built-in noise texture or solid color for demo
+        // Replace below URL with your own planet texture images if desired
+        const bumpMap = textureLoader.load(
+          'https://threejs.org/examples/textures/terrain/grasslight-big.jpg'
         );
 
-        // Start planet position: will be overridden by orbit later
-        planet.position.set(...adjustedPositions[i]);
+        const material = new THREE.MeshStandardMaterial({
+          color: planetColors[i],
+          roughness: 0.5,
+          metalness: 0.1,
+          bumpMap: bumpMap,
+          bumpScale: 0.1,
+          emissive: new THREE.Color(planetColors[i]).multiplyScalar(0.15),
+          emissiveIntensity: 0.2,
+        });
+
+        // Planet mesh
+        const planet = new THREE.Mesh(
+          new THREE.SphereGeometry(0.8, 64, 64),
+          material
+        );
+        planet.castShadow = true;
+        planet.receiveShadow = true;
+
+        // Position planet at orbit radius along x axis (y = 0)
+        planet.position.set(baseOrbitRadii[i], 0, 0);
         planet.name = label;
 
-        // Store userData for orbiting
+        // Store orbit info in userData
         planet.userData = {
-          baseColor: material.color.clone(),
-          material,
-          orbitRadius: planetOrbits[i].radius * (isMobile ? 0.7 : 1),
           orbitSpeed: planetOrbits[i].speed,
           orbitAngle: planetOrbits[i].angle,
-          basePosition: adjustedPositions[i].slice(),
+          orbitRadius: baseOrbitRadii[i],
         };
 
-        scene.add(planet);
+        group.add(planet);
         planets.push(planet);
 
-        // Create label text geometry with outline
+        // Text label geometry
         const textGeo = new TextGeometry(label, {
-          font,
-          size: 0.3,
+          font: font,
+          size: 0.25,
           height: 0.05,
           curveSegments: 12,
         });
         textGeo.computeBoundingBox();
-
         const centerOffset =
           -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
 
+        // Text mesh white with black outline
         const textMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
         const outlineGeo = textGeo.clone();
         outlineGeo.scale(1.05, 1.05, 1.05);
@@ -178,20 +192,32 @@ function init(canvas) {
         const textMesh = new THREE.Mesh(textGeo, textMat);
         const outlineMesh = new THREE.Mesh(outlineGeo, outlineMat);
 
-        // Position labels relative to planet (will update in animate)
+        // Position label above planet
         textMesh.position.set(
           planet.position.x + centerOffset,
-          planet.position.y + 1.2,
+          planet.position.y + 1.3,
           planet.position.z
         );
         outlineMesh.position.copy(textMesh.position);
 
-        scene.add(outlineMesh);
-        scene.add(textMesh);
+        group.add(outlineMesh);
+        group.add(textMesh);
 
-        // Store label meshes for updating position on orbit
-        planet.userData.textMesh = textMesh;
-        planet.userData.outlineMesh = outlineMesh;
+        // Orbit ring visualization
+        const ringGeometry = new THREE.RingGeometry(
+          baseOrbitRadii[i] - 0.02,
+          baseOrbitRadii[i] + 0.02,
+          64
+        );
+        const ringMaterial = new THREE.MeshBasicMaterial({
+          color: 0x444444,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.15,
+        });
+        const orbitRing = new THREE.Mesh(ringGeometry, ringMaterial);
+        orbitRing.rotation.x = Math.PI / 2;
+        scene.add(orbitRing);
       });
 
       console.log('[SCENE] Loaded with', scene.children.length, 'children');
@@ -201,27 +227,20 @@ function init(canvas) {
       console.error('[FONT ERROR]', err);
       loadingSpinner.remove();
 
-      const fallbackLabel = document.createElement('div');
-      fallbackLabel.textContent = 'Font load failed. Using fallback font.';
-      fallbackLabel.style.position = 'fixed';
-      fallbackLabel.style.top = '10px';
-      fallbackLabel.style.left = '50%';
-      fallbackLabel.style.transform = 'translateX(-50%)';
-      fallbackLabel.style.background = 'rgba(255,0,0,0.8)';
-      fallbackLabel.style.color = '#fff';
-      fallbackLabel.style.padding = '0.5rem 1rem';
-      fallbackLabel.style.zIndex = '1000';
-      document.body.appendChild(fallbackLabel);
-
-      const fallbackSections = ['Projects', 'Skills', 'About', 'Contact'];
-      fallbackSections.forEach((label, i) => {
-        const mat = new THREE.MeshStandardMaterial({ color: 0x00ffff });
+      // Fallback: create planets without labels or orbit rings
+      const fallbackColors = planetColors;
+      fallbackColors.forEach((color, i) => {
+        const fallbackMat = new THREE.MeshStandardMaterial({
+          color,
+          roughness: 0.5,
+          metalness: 0.1,
+        });
         const fallbackPlanet = new THREE.Mesh(
           new THREE.SphereGeometry(0.8, 32, 32),
-          mat
+          fallbackMat
         );
-        fallbackPlanet.position.set(...adjustedPositions[i]);
-        fallbackPlanet.name = label;
+        fallbackPlanet.position.set(baseOrbitRadii[i], 0, 0);
+        fallbackPlanet.name = `Fallback ${i}`;
         scene.add(fallbackPlanet);
         planets.push(fallbackPlanet);
       });
@@ -231,6 +250,23 @@ function init(canvas) {
   window.addEventListener('click', onClick, false);
   window.addEventListener('mousemove', onMouseMove, false);
   window.addEventListener('resize', onResize);
+}
+
+// Create glowing sun at center
+function createSun() {
+  const sunGeometry = new THREE.SphereGeometry(1.5, 64, 64);
+  const sunMaterial = new THREE.MeshBasicMaterial({
+    color: 0xffff66,
+    emissive: 0xffff44,
+    emissiveIntensity: 1,
+  });
+  sun = new THREE.Mesh(sunGeometry, sunMaterial);
+  scene.add(sun);
+
+  // Add point light to simulate sun glow
+  const sunLight = new THREE.PointLight(0xffffaa, 2, 50);
+  sunLight.position.set(0, 0, 0);
+  scene.add(sunLight);
 }
 
 function createStarfield() {
@@ -245,7 +281,7 @@ function createStarfield() {
       (Math.random() - 0.5) * 200,
       (Math.random() - 0.5) * 200
     );
-    opacities.push(Math.random());
+    opacities.push(Math.random()); // random opacity for twinkle effect
   }
 
   geometry.setAttribute(
@@ -281,7 +317,7 @@ function onClick(event) {
   const intersects = raycaster.intersectObjects(planets);
   if (intersects.length > 0) {
     const planet = intersects[0].object;
-    startCameraAnimation(planet.position);
+    startCameraAnimation(planet.getWorldPosition(new THREE.Vector3()));
 
     const name = planet.name;
     const card = document.createElement('floating-card');
@@ -335,7 +371,7 @@ function startCameraAnimation(targetPos) {
   animationStartTime = performance.now();
 
   cameraStartPos.copy(camera.position);
-  cameraEndPos.copy(targetPos).add(new THREE.Vector3(0, 1.5, 3));
+  cameraEndPos.copy(targetPos).add(new THREE.Vector3(0, 2, 5));
 
   targetStartPos.copy(controls.target);
   targetEndPos.copy(targetPos);
@@ -347,7 +383,7 @@ function startCameraAnimation(targetPos) {
 function animate() {
   requestAnimationFrame(animate);
 
-  // Animate starfield twinkle by varying opacity attribute
+  // Starfield twinkle by varying opacity attribute
   if (starfield) {
     const opacities = starfield.geometry.attributes.opacity.array;
     for (let i = 0; i < opacities.length; i++) {
@@ -357,34 +393,23 @@ function animate() {
     starfield.geometry.attributes.opacity.needsUpdate = true;
   }
 
-  // Update planets rotation and orbit
-  planets.forEach(planet => {
-    // Rotate on own axis
-    planet.rotation.y += 0.005;
-
-    // Orbit movement: update angle then calculate position
+  // Update planet orbits and rotations
+  planetGroups.forEach((group, i) => {
+    const planet = planets[i];
     planet.userData.orbitAngle += planet.userData.orbitSpeed;
+
     const angle = planet.userData.orbitAngle;
     const radius = planet.userData.orbitRadius;
-    const baseY = planet.userData.basePosition[1];
-    planet.position.x = Math.cos(angle) * radius;
-    planet.position.z = Math.sin(angle) * radius;
-    planet.position.y = baseY;
 
-    // Update label positions relative to planet
-    if (planet.userData.textMesh && planet.userData.outlineMesh) {
-      const textGeo = planet.userData.textMesh.geometry;
-      textGeo.computeBoundingBox();
-      const centerOffset =
-        -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x);
+    // Update group position to orbit center around origin on XZ plane (y=0)
+    group.position.set(
+      Math.cos(angle) * radius,
+      0,
+      Math.sin(angle) * radius
+    );
 
-      planet.userData.textMesh.position.set(
-        planet.position.x + centerOffset,
-        planet.position.y + 1.2,
-        planet.position.z
-      );
-      planet.userData.outlineMesh.position.copy(planet.userData.textMesh.position);
-    }
+    // Rotate planet on its own axis for realism
+    planet.rotation.y += 0.005;
   });
 
   if (isAnimatingCamera) {
@@ -402,6 +427,8 @@ function animate() {
       controls.enabled = true;
       controls.autoRotate = true;
     }
+  } else {
+    controls.update();
   }
 
   renderer.render(scene, camera);
@@ -413,14 +440,18 @@ function onResize() {
   camera.fov = isMobile ? 90 : 75;
   camera.updateProjectionMatrix();
 
-  // Only update orbit radius and base Y, do NOT reset position x,z
-  planets.forEach((planet, i) => {
-    const basePos = basePositions[i];
-    const scale = isMobile ? 0.7 : 1;
-
-    planet.userData.orbitRadius = Math.abs(basePos[0]) * scale; // radius always positive
-    planet.userData.basePosition[1] = basePos[1] * scale;
-  });
-
   renderer.setSize(window.innerWidth, window.innerHeight);
+
+  // Update planet orbit radii for responsive design
+  planetGroups.forEach((group, i) => {
+    const scale = isMobile ? 0.6 : 1;
+    const radius = baseOrbitRadii[i] * scale;
+    planetOrbits[i].radius = radius; // Update stored radius
+    group.position.set(
+      Math.cos(planetOrbits[i].angle) * radius,
+      0,
+      Math.sin(planetOrbits[i].angle) * radius
+    );
+    planets[i].userData.orbitRadius = radius;
+  });
 }
